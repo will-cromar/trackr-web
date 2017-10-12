@@ -1,0 +1,34 @@
+<html>
+<head>
+    {% if title %}
+    <title>{{title}} - Movie tracker</title>
+    {% else %}
+    <title>Movie tracker</title>
+    {% endif %}
+</head>
+<body>
+    <div>
+        <a href="/">Home</a> |
+        <a href="/addmedia">Add Movie</a> |
+        <a href="/login">Login</a> |
+        <a href="/signup">Sign up</a> |
+        <a href="/logout">Log out</a>
+    </div>
+    <hr>
+    {% if current_user.is_anonymous %}
+    <h1>Log in for a very special message</h1>
+    {% else %}
+    <h1>Hello, {{ current_user.username }}</h1>
+    {% endif %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</body>
+</html>

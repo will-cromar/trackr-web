@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="/createuser" method="post" name="signup">
+    {{ form.hidden_tag() }}
+    <p>
+        Username: {{ form.username() }}<br>
+        Password: {{ form.password() }}<br>
+        <input type="submit" value="Create account"><br>
+    </p>
+{% endblock %}

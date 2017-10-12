@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="/postmedia" method="post" name="postmedia">
+    {{ form.hidden_tag() }}
+    <p>
+        Title: {{ form.title(size=80) }}<br>
+        Time: {{ form.time() }}<br>
+        <input type="submit" value="Post"><br>
+    </p>
+    {% for movie in movies %}
+    <div><p>[{{ movie.media_id }}] {{ movie.title }} @ <b>{{ movie.time }}.</b> (Posted by {{ movie.author }})</p></div>
+    {% endfor %}
+{% endblock %}
