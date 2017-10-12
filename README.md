@@ -8,3 +8,5 @@ To use, make a run.py file with:
 `app.run(debug=True)`
 
 Coming soon: a pip requirements file.
+
+To initialize (or delete/re-initialize) a database file, visit the /hcf endpoint while the Flask server is running.
