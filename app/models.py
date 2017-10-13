@@ -5,6 +5,8 @@ import flask_login
 
 
 class Movie(db.Model):
+    __tablename__ = 'results'
+
     media_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64), index=True)
     time = db.Column(db.DateTime)
@@ -16,6 +18,8 @@ class Movie(db.Model):
 
 
 class User(db.Model, flask_login.UserMixin):
+    __tablename__ = 'users'
+
     username = db.Column(db.String(20), primary_key=True)
     password = db.Column(db.String(100))
 

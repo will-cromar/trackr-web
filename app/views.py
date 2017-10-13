@@ -138,4 +138,11 @@ def reset_db():
     os.remove('app.db')
     db.create_all()
 
-    return redirect('/admin')
+    return redirect('/')
+
+
+@app.route('/init')
+def create_db():
+    db.create_all()
+
+    return redirect('/')
