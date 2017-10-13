@@ -5,7 +5,7 @@ import flask_login
 
 
 class Movie(db.Model):
-    __tablename__ = 'results'
+    __tablename__ = 'movies'
 
     media_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64), index=True)
