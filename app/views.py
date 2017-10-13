@@ -1,7 +1,6 @@
 from flask import render_template, flash, redirect
 from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime
-import os
 from app import app, db, models, login_manager
 from .utils import passwordHash
 from .forms import PostForm, LoginForm, SignupForm
@@ -130,15 +129,6 @@ def queryall():
     moviesJson = ["{{\"name\": \"{}\", \"releaseDate\": {}}}".format(
         movie.title, movie.time.timestamp()) for movie in movies]
     return "[{}]".format(", ".join(moviesJson))
-
-
-@app.route('/hcf')
-def reset_db():
-    """Deletes and re-creates DB"""
-    os.remove('app.db')
-    db.create_all()
-
-    return redirect('/')
 
 
 @app.route('/init')
