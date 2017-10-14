@@ -38,8 +38,8 @@ def postmedia():
     """Submit content entry form"""
     form = PostForm()
     if form.validate_on_submit():
-        m = models.Movie(title=form.title.data,
-                         time=datetime.fromtimestamp(form.time.data),
+        m = models.Movie(name=form.title.data,
+                         releaseDate=datetime.fromtimestamp(form.time.data),
                          author=current_user.username)
         db.session.add(m)
         db.session.commit()
@@ -120,19 +120,9 @@ def logout():
     return redirect('/login')
 
 
-@app.route('/datadump')
-def queryall():
-    movies = models.Movie.query.all()
-
-    # HACK: get movie data in a JSON format compatible with the test app.
-    # There is almost certainly a better way to do this.
-    moviesJson = ["{{\"name\": \"{}\", \"releaseDate\": {}}}".format(
-        movie.title, movie.time.timestamp()) for movie in movies]
-    return "[{}]".format(", ".join(moviesJson))
-
-
 @app.route('/init')
 def create_db():
+    """Creates new database tables based on definitions in models.py"""
     db.create_all()
 
     return redirect('/')
