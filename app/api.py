@@ -1,5 +1,5 @@
 from app import app, models
-from .utils import passwordHash
+from .utils import passwordHash, generate_random_listings
 from flask.json import jsonify
 from flask_jwt import JWT, jwt_required, current_identity
 
@@ -34,3 +34,9 @@ def queryall():
                   for m in movies]
 
     return jsonify(moviesJson)
+
+
+@app.route('/api/subscriptions')
+# TODO: Implement this for real and enable jwt auth
+def subscriptions():
+    return jsonify({'subscriptions': generate_random_listings()})
