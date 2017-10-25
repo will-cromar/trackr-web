@@ -43,7 +43,7 @@ class Listing_Actors(db.Model):
 class Genre(db.Model):
     __tablename__ = 'genre'
 
-    genre_id = db.Column('genre_id', db.Integer, nullable=False, primary_key=True)
+    genre_id = db.Column('genre_id', db.Integer, nullable=False, autoincrement=True, primary_key=True)
     genre = db.Column('genre', db.String(16), nullable=False)
 
 class Listing_Genres(db.Model):
@@ -55,8 +55,8 @@ class Listing_Genres(db.Model):
 class Schedule(db.Model):
     __tablename__ = 'schedule'
 
-    schedule_id = db.Column('schedule_id', db.Integer, nullable=False, primary_key=True)
-    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
+    schedule_id = db.Column('schedule_id', db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'))
     title = db.Column('title', db.String(128))
     season = db.Column('season', db.Integer)
     episode = db.Column('episode', db.Integer)
