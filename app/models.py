@@ -16,29 +16,34 @@ class Listing(db.Model):
     def delta(self):
         return self.time - datetime.utcnow()
 
+
 class Person(db.Model):
     __tablename__ = 'person'
 
     person_id = db.Column('person_id', db.String(16), nullable=False, primary_key=True)
     name = db.Column('name', db.String(128), nullable=False)
 
+
 class Listing_Writers(db.Model):
     __tablename__ = 'listing_writers'
 
-    listing_id = db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
+    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
     person_id = db.Column('person_id', db.String(16), db.ForeignKey('person.person_id'), nullable=False, primary_key=True)
+
 
 class Listing_Directors(db.Model):
     __tablename__ = 'listing_directors'
 
-    listing_id = db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
+    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
     person_id = db.Column('person_id', db.String(16), db.ForeignKey('person.person_id'), nullable=False, primary_key=True)
+
 
 class Listing_Actors(db.Model):
-    __tablename__ = 'listing_Actors'
+    __tablename__ = 'listing_actors'
 
-    listing_id = db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
+    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
     person_id = db.Column('person_id', db.String(16), db.ForeignKey('person.person_id'), nullable=False, primary_key=True)
+
 
 class Genre(db.Model):
     __tablename__ = 'genre'
@@ -46,11 +51,13 @@ class Genre(db.Model):
     genre_id = db.Column('genre_id', db.Integer, nullable=False, autoincrement=True, primary_key=True)
     genre = db.Column('genre', db.String(16), nullable=False)
 
+
 class Listing_Genres(db.Model):
     __tablename__ = 'listing_genres'
 
-    listing_id = db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
-    genre_id = db.Column('genre_id', db.String(16), db.ForeignKey('genre.genre_id'), nullable=False, primary_key=True)
+    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
+    genre_id = db.Column('genre_id', db.Integer, db.ForeignKey('genre.genre_id'), nullable=False, primary_key=True)
+
 
 class Schedule(db.Model):
     __tablename__ = 'schedule'
@@ -61,6 +68,7 @@ class Schedule(db.Model):
     season = db.Column('season', db.Integer)
     episode = db.Column('episode', db.Integer)
     date = db.Column('datetime', db.DateTime)
+
 
 class User(db.Model, flask_login.UserMixin):
     __tablename__ = 'users'
@@ -74,6 +82,7 @@ class User(db.Model, flask_login.UserMixin):
 
     def get_id(self):
         return self.username
+
 
 class User_Subscriptions(db.Model):
     __tablename__ = 'user_subscriptions'

@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
-cache = redis.from_url('redis://localhost:6379', encoding='utf-8',
+cache = redis.from_url(app.config['REDIS_URL'], encoding='utf-8',
                        decode_responses=True)
 
 login_manager = LoginManager()
