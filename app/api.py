@@ -1,7 +1,10 @@
-from app import app, models
+from app import app, models, cache
 from .utils import passwordHash, generate_random_listings
 from flask.json import jsonify
 from flask_jwt import JWT, jwt_required, current_identity
+
+import json
+import time
 
 
 def authenticate(username, password):
@@ -26,6 +29,16 @@ def protected():
     return jsonify({"username": current_identity.username})
 
 
+@app.route('/api/notifications')
+@jwt_required()
+def notifications():
+    """Fetches notifications in cache for uesr based on JWT token"""
+    notification_string = cache.get(current_identity.username)
+    notification = json.loads(notification_string)
+
+    return jsonify(notification)
+
+
 @app.route('/datadump')
 def queryall():
     """Prints all movie names and release dates in database"""
@@ -40,3 +53,23 @@ def queryall():
 # TODO: Implement this for real and enable jwt auth
 def subscriptions():
     return jsonify({'subscriptions': generate_random_listings()})
+
+
+@app.route('/api/cachedump')
+def cachedump():
+    return jsonify({key: cache[key] for key in cache.keys()})
+
+
+@app.route('/api/refreshcache')
+def refreshcache():
+    userids = map(models.User.get_id, models.User.query.all())
+
+    for u in userids:
+        # TODO: Actually look up subscriptions
+        notification = {'listing_id': 0,
+                        'message': 'You have a notification!',
+                        'time': int(time.time())}
+
+        cache.set(u, json.dumps(notification))
+
+    return 'done'
