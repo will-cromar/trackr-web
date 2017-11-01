@@ -3,6 +3,36 @@ from datetime import datetime
 from app import db
 import flask_login
 
+listing_writers = db.Table(
+    'listing_writers', db.Model.metadata,
+    db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id')),
+    db.Column('person_id', db.Integer, db.ForeignKey('person.person_id'))
+)
+
+listing_directors = db.Table(
+    'listing_directors', db.Model.metadata,
+    db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id')),
+    db.Column('person_id', db.Integer, db.ForeignKey('person.person_id'))
+)
+
+listing_actors = db.Table(
+    'listing_actors', db.Model.metadata,
+    db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id')),
+    db.Column('person_id', db.Integer, db.ForeignKey('person.person_id'))
+)
+
+listing_genres = db.Table(
+    'listing_genres', db.Model.metadata,
+    db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id')),
+    db.Column('genre_id', db.Integer, db.ForeignKey('genre.genre_id'))
+)
+
+user_subscriptions = db.Table(
+    'user_subscriptions', db.Model.metadata,
+    db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id')),
+    db.Column('person_id', db.Integer, db.ForeignKey('person.person_id'))
+)
+
 
 class Listing(db.Model):
     __tablename__ = 'listing'
@@ -11,6 +41,14 @@ class Listing(db.Model):
     title = db.Column('title', db.String(128), nullable=False)
     description = db.Column('description', db.String(4096))
     release_date = db.Column('release_date', db.Date)
+    directors = db.relationship('Person',
+                                secondary=listing_directors)
+    writers = db.relationship('Person',
+                              secondary=listing_writers)
+    actors = db.relationship('Person',
+                             secondary=listing_actors)
+    genres = db.relationship('Genre',
+                             secondary=listing_genres)
 
     @property
     def delta(self):
@@ -24,39 +62,11 @@ class Person(db.Model):
     name = db.Column('name', db.String(128), nullable=False)
 
 
-class Listing_Writers(db.Model):
-    __tablename__ = 'listing_writers'
-
-    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
-    person_id = db.Column('person_id', db.String(16), db.ForeignKey('person.person_id'), nullable=False, primary_key=True)
-
-
-class Listing_Directors(db.Model):
-    __tablename__ = 'listing_directors'
-
-    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
-    person_id = db.Column('person_id', db.String(16), db.ForeignKey('person.person_id'), nullable=False, primary_key=True)
-
-
-class Listing_Actors(db.Model):
-    __tablename__ = 'listing_actors'
-
-    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
-    person_id = db.Column('person_id', db.String(16), db.ForeignKey('person.person_id'), nullable=False, primary_key=True)
-
-
 class Genre(db.Model):
     __tablename__ = 'genre'
 
     genre_id = db.Column('genre_id', db.Integer, nullable=False, autoincrement=True, primary_key=True)
     genre = db.Column('genre', db.String(16), nullable=False)
-
-
-class Listing_Genres(db.Model):
-    __tablename__ = 'listing_genres'
-
-    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'), nullable=False, primary_key=True)
-    genre_id = db.Column('genre_id', db.Integer, db.ForeignKey('genre.genre_id'), nullable=False, primary_key=True)
 
 
 class Schedule(db.Model):
@@ -75,6 +85,8 @@ class User(db.Model, flask_login.UserMixin):
 
     username = db.Column('username', db.String(32), nullable=False, primary_key=True)
     password = db.Column('password', db.String(128), nullable=False)
+    subscriptions = db.relationship('Listing',
+                                    secondary=user_subscriptions)
 
     @property
     def id(self):
@@ -82,10 +94,3 @@ class User(db.Model, flask_login.UserMixin):
 
     def get_id(self):
         return self.username
-
-
-class User_Subscriptions(db.Model):
-    __tablename__ = 'user_subscriptions'
-
-    user_id = db.Column('username', db.String(32), db.ForeignKey('users.username'), primary_key=True)
-    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'), primary_key=True)
