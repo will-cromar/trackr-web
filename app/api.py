@@ -1,5 +1,6 @@
-from app import app, models, cache
+from app import app, models, cache, db
 from .utils import passwordHash, generate_random_listings
+from flask import request
 from flask.json import jsonify
 from flask_jwt import JWT, jwt_required, current_identity
 
@@ -37,6 +38,18 @@ def notifications():
     notification = json.loads(notification_string)
 
     return jsonify(notification)
+
+
+@app.route('/api/createaccount', methods=['POST'])
+def createaccount():
+    """Creates user account from given username and password"""
+    data = request.get_json()
+
+    u = models.User(username=data['username'],
+                    password=passwordHash(data['password']))
+    db.session.add(u)
+    db.session.commit()
+    return jsonify({})
 
 
 @app.route('/datadump')

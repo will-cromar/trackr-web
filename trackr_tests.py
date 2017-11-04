@@ -2,6 +2,7 @@ import os
 import unittest
 import tempfile
 import shutil
+import json
 
 
 # This is required because of over-reliance on environment variables.
@@ -69,10 +70,32 @@ class TrackrTestCases(unittest.TestCase):
         assert users[0].subscriptions == listings
         assert users[1].subscriptions == []
 
+    def test_api_create_user(self):
+        resp = self.post_json('/api/createaccount', username='will',
+                              password='hunter2')
+        assert resp.status_code == 200
+
+        resp = self.post_json('/auth', username='will',
+                              password='hunter2')
+        assert resp.status_code == 200
+
+        token = json.loads(resp.data)['access_token']
+
+        resp = self.app.get('/api/whoami',
+                            headers={'authorization': 'JWT {}'.format(token)})
+        assert json.loads(resp.data)['username'] == 'will'
+
+
     # Helpers
     def copy_row(self, item, model):
         """Copies a row, given that row and the constructor for its type"""
         return model(**utils.model_dict(item))
+
+    def post_json(self, endpoint, authorization="", **kwargs):
+        """Post given keywords to endpoint as json"""
+        return self.app.post(endpoint, data=json.dumps(kwargs),
+                             headers={'authorization': authorization},
+                             content_type='application/json')
 
 
 if __name__ == "__main__":
