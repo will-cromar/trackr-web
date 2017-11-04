@@ -2,7 +2,15 @@ import os
 import unittest
 import tempfile
 import shutil
-from app import app, db, models, utils
+
+
+# This is required because of over-reliance on environment variables.
+# Sorry -- Will
+temp_dir = tempfile.mkdtemp()
+os.environ["DATABASE_URL"] = (
+    "sqlite:///" + os.path.join(temp_dir, "app.db"))
+from app import app, db, models, utils # noqa
+print("Temp database:", app.config['SQLALCHEMY_DATABASE_URI'])
 
 
 test_people = [
@@ -26,17 +34,12 @@ class TrackrTestCases(unittest.TestCase):
 
     # Boilerplate
     def setUp(self):
-        self.temp_dir = tempfile.mkdtemp()
-        app.config['SQLALCHEMY_DATABASE_URI'] = (
-            "sqlite:///" + os.path.join(self.temp_dir, "app.db"))
         self.db = db
         self.app = app.test_client()
-        with app.app_context():
-            self.db.create_all()
+        self.db.create_all()
 
     def tearDown(self):
         self.db.drop_all()
-        shutil.rmtree(self.temp_dir)
 
     # Tests
     def test_listing_relations(self):
@@ -74,3 +77,5 @@ class TrackrTestCases(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+shutil.rmtree(temp_dir)
