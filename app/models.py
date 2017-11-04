@@ -30,7 +30,7 @@ listing_genres = db.Table(
 user_subscriptions = db.Table(
     'user_subscriptions', db.Model.metadata,
     db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id')),
-    db.Column('person_id', db.Integer, db.ForeignKey('person.person_id'))
+    db.Column('user_id', db.Integer, db.ForeignKey('user.username'))
 )
 
 
@@ -81,7 +81,7 @@ class Schedule(db.Model):
 
 
 class User(db.Model, flask_login.UserMixin):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
 
     username = db.Column('username', db.String(32), nullable=False, primary_key=True)
     password = db.Column('password', db.String(128), nullable=False)
