@@ -1,5 +1,5 @@
 from app import app, models, cache, db
-from .utils import passwordHash, generate_random_listings
+from .utils import passwordHash, generate_random_listings, model_dict
 from flask import request
 from flask.json import jsonify
 from flask_jwt import JWT, jwt_required, current_identity
@@ -50,6 +50,17 @@ def createaccount():
     db.session.add(u)
     db.session.commit()
     return jsonify({})
+
+
+@app.route('/api/query')
+def query():
+    q = request.args.get('query')
+
+    # TODO: Actually filter these
+    listings = models.Listing.query.all()
+
+    res = list(map(model_dict, listings))
+    return jsonify(res)
 
 
 @app.route('/datadump')
