@@ -38,5 +38,5 @@ def generate_random_listings(num_listings=10, num_people=20, string_length=20):
 
 def model_dict(item):
     """Returns a dict containing the data from an SQLAlchemy model instance"""
-    return {k: v for k, v in item.__dict__.items() 
+    return {k: v for k, v in item.__dict__.items()
             if not str(k).startswith("_")}

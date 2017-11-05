@@ -40,33 +40,42 @@ class TrackrTestCases(unittest.TestCase):
         self.db.create_all()
 
     def tearDown(self):
+        self.db.session.remove()
         self.db.drop_all()
 
     # Tests
     def test_listing_relations(self):
         # Make a copy, since we're mutating its state
-        l = self.copy_row(test_listings[0], models.Listing)
-        l.directors.append(test_people[0])
-        l.writers.append(test_people[1])
-        l.actors.extend(test_people)
+        self.db.session.add_all(test_listings)
+        self.db.session.add_all(test_people)
+        self.db.session.commit()
+
+        listings = models.Listing.query.all()
+        people = models.Person.query.all()
+        l = listings[0]
+        l.directors.append(people[0])
+        l.writers.append(people[1])
+        l.actors.extend(people)
         self.db.session.add(l)
         self.db.session.commit()
 
         listing = models.Listing.query.get(0)
-        people = models.Person.query.all()
         assert listing.directors == [people[0]]
         assert listing.writers == [people[1]]
         assert listing.actors == people
 
     def test_user_subscriptions(self):
-        u = self.copy_row(test_users[0], models.User)
-        u.subscriptions.extend(test_listings)
-        self.db.session.add(u)
-        self.db.session.add(test_users[1])
+        self.db.session.add_all(test_users)
+        self.db.session.add_all(test_listings)
+        self.db.session.commit()
+
+        listings = models.Listing.query.all()
+        users = models.User.query.all()
+        users[0].subscriptions.extend(listings)
+        self.db.session.add(users[0])
         self.db.session.commit()
 
         users = models.User.query.all()
-        listings = models.Listing.query.all()
         assert users[0].subscriptions == listings
         assert users[1].subscriptions == []
 
@@ -85,6 +94,13 @@ class TrackrTestCases(unittest.TestCase):
                             headers={'authorization': 'JWT {}'.format(token)})
         assert json.loads(resp.data)['username'] == 'will'
 
+    def test_query_api(self):
+        self.db.session.add_all(test_listings)
+        self.db.session.commit()
+
+        listings = models.Listing.query.all()
+        resp = self.app.get('/api/query?query=asdf')
+        assert json.loads(resp.data) == list(map(utils.model_dict, listings))
 
     # Helpers
     def copy_row(self, item, model):
