@@ -60,7 +60,7 @@ def query():
     listings = models.Listing.query.all()
 
     res = list(map(model_dict, listings))
-    return jsonify(res)
+    return jsonify({'results': res})
 
 
 @app.route('/datadump')

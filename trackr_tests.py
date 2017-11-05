@@ -100,7 +100,8 @@ class TrackrTestCases(unittest.TestCase):
 
         listings = models.Listing.query.all()
         resp = self.app.get('/api/query?query=asdf')
-        assert json.loads(resp.data) == list(map(utils.model_dict, listings))
+        assert json.loads(resp.data) == {'results':
+                                         list(map(utils.model_dict, listings))}
 
     # Helpers
     def copy_row(self, item, model):
