@@ -82,6 +82,7 @@ class TrackrTestCases(unittest.TestCase):
     def test_api_create_user(self):
         resp = self.post_json('/api/createaccount', username='will',
                               password='hunter2')
+        assert json.loads(resp.data)['status_code'] == "200"
         assert resp.status_code == 200
 
         resp = self.post_json('/auth', username='will',

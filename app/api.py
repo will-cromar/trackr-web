@@ -49,7 +49,7 @@ def createaccount():
                     password=passwordHash(data['password']))
     db.session.add(u)
     db.session.commit()
-    return jsonify({})
+    return jsonify({'status_code': "200"})
 
 
 @app.route('/api/query')
