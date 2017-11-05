@@ -34,10 +34,10 @@ def protected():
 @jwt_required()
 def notifications():
     """Fetches notifications in cache for uesr based on JWT token"""
-    notification_string = cache.get(current_identity.username)
-    notification = json.loads(notification_string)
+    notifications_string = cache.get(current_identity.username)
+    notifications = json.loads(notifications_string)
 
-    return jsonify(notification)
+    return jsonify({'notifications': notifications})
 
 
 @app.route('/api/createaccount', methods=['POST'])
@@ -94,6 +94,6 @@ def refreshcache():
                         'message': 'You have a notification!',
                         'time': int(time.time())}
 
-        cache.set(u, json.dumps(notification))
+        cache.set(u, json.dumps([notification]))
 
     return 'done'
