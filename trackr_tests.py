@@ -80,6 +80,15 @@ class TrackrTestCases(unittest.TestCase):
         assert users[0].subscriptions == listings
         assert users[1].subscriptions == []
 
+    def test_query_api(self):
+        self.db.session.add_all(self.test_listings)
+        self.db.session.commit()
+
+        listings = models.Listing.query.all()
+        resp = self.app.get('/api/query?query=asdf')
+        assert json.loads(resp.data) == {'results':
+                                         list(map(utils.model_dict, listings))}
+
     def test_api_create_user(self):
         resp = self.post_json('/api/createaccount', username='will',
                               password='hunter2')
@@ -93,17 +102,29 @@ class TrackrTestCases(unittest.TestCase):
         token = json.loads(resp.data)['access_token']
 
         resp = self.app.get('/api/whoami',
-                            headers={'authorization': 'JWT {}'.format(token)})
+                            headers={'Authorization': 'JWT {}'.format(token)})
         assert json.loads(resp.data)['username'] == 'will'
 
-    def test_query_api(self):
+    def test_add_subscriptions(self):
         self.db.session.add_all(self.test_listings)
         self.db.session.commit()
 
+        resp = self.post_json('/api/createaccount', username='will',
+                              password='hunter2')
+        resp = self.post_json('/auth', username='will',
+                              password='hunter2')
+        assert resp.status_code == 200
+
+        token = json.loads(resp.data)['access_token']
+
         listings = models.Listing.query.all()
-        resp = self.app.get('/api/query?query=asdf')
-        assert json.loads(resp.data) == {'results':
-                                         list(map(utils.model_dict, listings))}
+        listing_id = listings[0].listing_id
+        resp = self.post_json('/api/addsubscription', authorization=token,
+                              listing_id=listings[0].listing_id)
+
+        listing = models.Listing.query.get(listing_id)
+        assert resp.status_code == 200
+        assert models.User.query.get('will').subscriptions == [listing]
 
     # Helpers
     def copy_row(self, item, model):
@@ -113,7 +134,8 @@ class TrackrTestCases(unittest.TestCase):
     def post_json(self, endpoint, authorization="", **kwargs):
         """Post given keywords to endpoint as json"""
         return self.app.post(endpoint, data=json.dumps(kwargs),
-                             headers={'authorization': authorization},
+                             headers={'Authorization': "JWT {}"
+                                      .format(authorization)},
                              content_type='application/json')
 
 
