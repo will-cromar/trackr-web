@@ -100,9 +100,7 @@ class TrackrTestCases(unittest.TestCase):
         assert resp.status_code == 200
 
         token = json.loads(resp.data)['access_token']
-
-        resp = self.app.get('/api/whoami',
-                            headers={'Authorization': 'JWT {}'.format(token)})
+        resp = self.get_auth('/api/whoami', authorization=token)
         assert json.loads(resp.data)['username'] == 'will'
 
     def test_add_subscriptions(self):
@@ -126,10 +124,37 @@ class TrackrTestCases(unittest.TestCase):
         assert resp.status_code == 200
         assert models.User.query.get('will').subscriptions == [listing]
 
+    def test_get_subscriptions(self):
+        self.db.session.add_all(self.test_listings)
+        self.db.session.commit()
+
+        resp = self.post_json('/api/createaccount', username='will',
+                              password='hunter2')
+        resp = self.post_json('/auth', username='will',
+                              password='hunter2')
+
+        token = json.loads(resp.data)['access_token']
+        listings = models.Listing.query.all()
+        listing_ids = list(map(lambda l: l.listing_id, listings))
+        for lid in listing_ids:
+            resp = self.post_json('/api/addsubscription', authorization=token,
+                                  listing_id=lid)
+            assert resp.status_code == 200
+
+        subs = models.User.query.get('will').subscriptions
+        resp = self.get_auth('/api/subscriptions', token)
+        assert {'subscriptions': list(map(utils.model_dict, subs))} == (
+            json.loads(resp.data))
+
     # Helpers
     def copy_row(self, item, model):
         """Copies a row, given that row and the constructor for its type"""
         return model(**utils.model_dict(item))
+
+    def get_auth(self, endpoint, authorization=""):
+        return self.app.get(endpoint,
+                            headers={'Authorization': 'JWT {}'
+                                     .format(authorization)})
 
     def post_json(self, endpoint, authorization="", **kwargs):
         """Post given keywords to endpoint as json"""
