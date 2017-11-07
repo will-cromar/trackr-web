@@ -37,7 +37,8 @@ user_subscriptions = db.Table(
 class Listing(db.Model):
     __tablename__ = 'listing'
 
-    listing_id = db.Column('listing_id', db.String(16), nullable=False, primary_key=True)
+    listing_id = db.Column('listing_id', db.Integer, nullable=False,
+                           autoincrement=True, primary_key=True)
     title = db.Column('title', db.String(128), nullable=False)
     description = db.Column('description', db.String(4096))
     release_date = db.Column('release_date', db.Date)
@@ -58,22 +59,26 @@ class Listing(db.Model):
 class Person(db.Model):
     __tablename__ = 'person'
 
-    person_id = db.Column('person_id', db.String(16), nullable=False, primary_key=True)
+    person_id = db.Column('person_id', db.Integer, nullable=False,
+                          autoincrement=True, primary_key=True)
     name = db.Column('name', db.String(128), nullable=False)
 
 
 class Genre(db.Model):
     __tablename__ = 'genre'
 
-    genre_id = db.Column('genre_id', db.Integer, nullable=False, autoincrement=True, primary_key=True)
+    genre_id = db.Column('genre_id', db.Integer, nullable=False,
+                         autoincrement=True, primary_key=True)
     genre = db.Column('genre', db.String(16), nullable=False)
 
 
 class Schedule(db.Model):
     __tablename__ = 'schedule'
 
-    schedule_id = db.Column('schedule_id', db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    listing_id = db.Column('listing_id', db.String(16), db.ForeignKey('listing.listing_id'))
+    schedule_id = db.Column('schedule_id', db.Integer, nullable=False,
+                            autoincrement=True, primary_key=True)
+    listing_id = db.Column('listing_id', db.String(16),
+                           db.ForeignKey('listing.listing_id'))
     title = db.Column('title', db.String(128))
     season = db.Column('season', db.Integer)
     episode = db.Column('episode', db.Integer)
@@ -83,7 +88,8 @@ class Schedule(db.Model):
 class User(db.Model, flask_login.UserMixin):
     __tablename__ = 'user'
 
-    username = db.Column('username', db.String(32), nullable=False, primary_key=True)
+    username = db.Column('username', db.String(32), nullable=False,
+                         primary_key=True)
     password = db.Column('password', db.String(128), nullable=False)
     subscriptions = db.relationship('Listing',
                                     secondary=user_subscriptions)

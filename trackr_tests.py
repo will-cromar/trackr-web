@@ -14,27 +14,28 @@ from app import app, db, models, utils # noqa
 print("Temp database:", app.config['SQLALCHEMY_DATABASE_URI'])
 
 
-test_people = [
-    models.Person(person_id=0, name='Will Cromar'),
-    models.Person(person_id=1, name='Alex Marrich'),
-    models.Person(person_id=2, name='Brenden Apswich')
-]
-
-test_listings = [
-    models.Listing(listing_id=0, title='Biology: Chemistry in Disguise'),
-    models.Listing(listing_id=1, title='Oviedo: The City of Chickens')
-]
-
-test_users = [
-    models.User(username='will', password='hunter2'),
-    models.User(username='alex', password='deadbeef')
-]
-
-
 class TrackrTestCases(unittest.TestCase):
 
     # Boilerplate
     def setUp(self):
+        # These need to be re-initialized separately for each test because
+        # SQLAlchemy is weird
+        self.test_people = [
+            models.Person(name='Will Cromar'),
+            models.Person(name='Alex Marrich'),
+            models.Person(name='Brenden Apswich')
+        ]
+
+        self.test_listings = [
+            models.Listing(title='Biology: Chemistry in Disguise'),
+            models.Listing(title='Oviedo: The City of Chickens')
+        ]
+
+        self.test_users = [
+            models.User(username='will', password='hunter2'),
+            models.User(username='alex', password='deadbeef')
+        ]
+
         self.db = db
         self.app = app.test_client()
         self.db.create_all()
@@ -46,8 +47,8 @@ class TrackrTestCases(unittest.TestCase):
     # Tests
     def test_listing_relations(self):
         # Make a copy, since we're mutating its state
-        self.db.session.add_all(test_listings)
-        self.db.session.add_all(test_people)
+        self.db.session.add_all(self.test_listings)
+        self.db.session.add_all(self.test_people)
         self.db.session.commit()
 
         listings = models.Listing.query.all()
@@ -59,14 +60,14 @@ class TrackrTestCases(unittest.TestCase):
         self.db.session.add(l)
         self.db.session.commit()
 
-        listing = models.Listing.query.get(0)
+        listing = listings[0]
         assert listing.directors == [people[0]]
         assert listing.writers == [people[1]]
         assert listing.actors == people
 
     def test_user_subscriptions(self):
-        self.db.session.add_all(test_users)
-        self.db.session.add_all(test_listings)
+        self.db.session.add_all(self.test_users)
+        self.db.session.add_all(self.test_listings)
         self.db.session.commit()
 
         listings = models.Listing.query.all()
@@ -96,7 +97,7 @@ class TrackrTestCases(unittest.TestCase):
         assert json.loads(resp.data)['username'] == 'will'
 
     def test_query_api(self):
-        self.db.session.add_all(test_listings)
+        self.db.session.add_all(self.test_listings)
         self.db.session.commit()
 
         listings = models.Listing.query.all()
