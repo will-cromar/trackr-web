@@ -73,10 +73,28 @@ def queryall():
     return jsonify(moviesJson)
 
 
+@app.route('/api/addsubscription', methods=['POST'])
+@jwt_required()
+def addsubscription():
+    listing_id = request.get_json()['listing_id']
+    username = current_identity.username
+
+    u = models.User.query.get(username)
+    l = models.Listing.query.get(listing_id)
+    u.subscriptions.append(l)
+
+    db.session.add(u)
+    db.session.commit()
+
+    return jsonify({'status_code': '200'})
+
+
 @app.route('/api/subscriptions')
-# TODO: Implement this for real and enable jwt auth
+@jwt_required()
 def subscriptions():
-    return jsonify({'subscriptions': generate_random_listings()})
+    subs = current_identity.subscriptions
+    res = list(map(model_dict, subs))
+    return jsonify({'subscriptions': res})
 
 
 @app.route('/api/cachedump')
