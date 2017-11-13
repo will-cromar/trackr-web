@@ -60,6 +60,8 @@ def query():
     listings = models.Listing.query.all()
 
     res = list(map(model_dict, listings))
+    for row in res:
+        row['release_date'] = int(row['release_date'].timestamp())
     return jsonify({'results': res})
 
 
@@ -94,6 +96,8 @@ def addsubscription():
 def subscriptions():
     subs = current_identity.subscriptions
     res = list(map(model_dict, subs))
+    for row in res:
+        row['release_date'] = int(row['release_date'].timestamp())
     return jsonify({'subscriptions': res})
 
 

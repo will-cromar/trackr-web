@@ -3,6 +3,7 @@ import unittest
 import tempfile
 import shutil
 import json
+from datetime import datetime
 
 
 # This is required because of over-reliance on environment variables.
@@ -27,8 +28,8 @@ class TrackrTestCases(unittest.TestCase):
         ]
 
         self.test_listings = [
-            models.Listing(title='Biology: Chemistry in Disguise'),
-            models.Listing(title='Oviedo: The City of Chickens')
+            models.Listing(title='Biology: Chemistry in Disguise', release_date=datetime.utcnow()),
+            models.Listing(title='Oviedo: The City of Chickens', release_date=datetime.utcnow())
         ]
 
         self.test_users = [
@@ -85,9 +86,12 @@ class TrackrTestCases(unittest.TestCase):
         self.db.session.commit()
 
         listings = models.Listing.query.all()
+        results = {'results': list(map(utils.model_dict, listings))}
+        for row in results['results']:
+            row['release_date'] = int(row['release_date'].timestamp())
+
         resp = self.app.get('/api/query?query=asdf')
-        assert json.loads(resp.data) == {'results':
-                                         list(map(utils.model_dict, listings))}
+        assert json.loads(resp.data) == results
 
     def test_api_create_user(self):
         resp = self.post_json('/api/createaccount', username='will',
@@ -142,8 +146,11 @@ class TrackrTestCases(unittest.TestCase):
             assert resp.status_code == 200
 
         subs = models.User.query.get('will').subscriptions
+        subs_dict = list(map(utils.model_dict, subs))
+        for row in subs_dict:
+            row['release_date'] = int(row['release_date'].timestamp())
         resp = self.get_auth('/api/subscriptions', token)
-        assert {'subscriptions': list(map(utils.model_dict, subs))} == (
+        assert {'subscriptions': subs_dict} == (
             json.loads(resp.data))
 
     # Helpers

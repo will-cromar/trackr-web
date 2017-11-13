@@ -41,7 +41,7 @@ class Listing(db.Model):
                            autoincrement=True, primary_key=True)
     title = db.Column('title', db.String(128), nullable=False)
     description = db.Column('description', db.String(4096))
-    release_date = db.Column('release_date', db.Date)
+    release_date = db.Column('release_date', db.DateTime)
     directors = db.relationship('Person',
                                 secondary=listing_directors)
     writers = db.relationship('Person',
