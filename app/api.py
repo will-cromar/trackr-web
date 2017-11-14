@@ -98,6 +98,12 @@ def subscriptions():
     return jsonify({'subscriptions': res})
 
 
+@app.route('/api/genrelist')
+def genreslist():
+    res = list(map(models.Genre.todict, models.Genre.query.all()))
+    return jsonify({'genres': res})
+
+
 @app.route('/api/cachedump')
 def cachedump():
     return jsonify({key: cache[key] for key in cache.keys()})
