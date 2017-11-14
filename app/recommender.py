@@ -11,11 +11,6 @@ def get_recommendations():
 
     recommendations = []
 
-    """
-        "Et tu, Brute?"
-                - CPU
-    """
-
     for l1 in listings:
         top_score = 0
         top_listing = 0
@@ -32,6 +27,19 @@ def get_recommendations():
 
     return recommendations
 
+def get_closest_recommendation(listing_1):
+    listings = db.session.query(models.Listing).all()
+
+    top_score = 0
+    top_listing = None
+
+    for l1 in listings:
+        t_score, _ = __calc_similarity_score(listing_1, l1)
+        if t_score > top_score and listing_1 != l1:
+            top_score = t_score
+            top_listing = l1
+
+    return top_listing
 
 """
     Similarity Score is determined by counting the number of
