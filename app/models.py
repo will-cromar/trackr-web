@@ -30,7 +30,7 @@ listing_genres = db.Table(
 user_subscriptions = db.Table(
     'user_subscriptions', db.Model.metadata,
     db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.username'))
+    db.Column('user_id', db.String(32), db.ForeignKey('user.username'))
 )
 
 
