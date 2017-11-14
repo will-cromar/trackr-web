@@ -101,7 +101,7 @@ class Schedule(db.Model):
 
     schedule_id = db.Column('schedule_id', db.Integer, nullable=False,
                             autoincrement=True, primary_key=True)
-    listing_id = db.Column('listing_id', db.String(16),
+    listing_id = db.Column('listing_id', db.Integer,
                            db.ForeignKey('listing.listing_id'))
     title = db.Column('title', db.String(128))
     season = db.Column('season', db.Integer)
