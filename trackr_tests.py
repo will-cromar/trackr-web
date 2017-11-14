@@ -86,9 +86,7 @@ class TrackrTestCases(unittest.TestCase):
         self.db.session.commit()
 
         listings = models.Listing.query.all()
-        results = {'results': list(map(utils.model_dict, listings))}
-        for row in results['results']:
-            row['release_date'] = int(row['release_date'].timestamp())
+        results = {'results': list(map(models.Listing.todict, listings))}
 
         resp = self.app.get('/api/query?query=asdf')
         assert json.loads(resp.data) == results
@@ -146,12 +144,9 @@ class TrackrTestCases(unittest.TestCase):
             assert resp.status_code == 200
 
         subs = models.User.query.get('will').subscriptions
-        subs_dict = list(map(utils.model_dict, subs))
-        for row in subs_dict:
-            row['release_date'] = int(row['release_date'].timestamp())
+        subs_dict = list(map(models.Listing.todict, subs))
         resp = self.get_auth('/api/subscriptions', token)
-        assert {'subscriptions': subs_dict} == (
-            json.loads(resp.data))
+        assert {'subscriptions': subs_dict} == json.loads(resp.data)
 
     # Helpers
     def copy_row(self, item, model):

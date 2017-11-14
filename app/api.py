@@ -6,6 +6,7 @@ from flask_jwt import JWT, jwt_required, current_identity
 
 import json
 import time
+from datetime import datetime
 
 
 def authenticate(username, password):
@@ -59,9 +60,7 @@ def query():
     # TODO: Actually filter these
     listings = models.Listing.query.all()
 
-    res = list(map(model_dict, listings))
-    for row in res:
-        row['release_date'] = int(row['release_date'].timestamp())
+    res = list(map(models.Listing.todict, listings))
     return jsonify({'results': res})
 
 
@@ -95,9 +94,7 @@ def addsubscription():
 @jwt_required()
 def subscriptions():
     subs = current_identity.subscriptions
-    res = list(map(model_dict, subs))
-    for row in res:
-        row['release_date'] = int(row['release_date'].timestamp())
+    res = list(map(models.Listing.todict, subs))
     return jsonify({'subscriptions': res})
 
 
@@ -119,3 +116,32 @@ def refreshcache():
         cache.set(u, json.dumps([notification]))
 
     return 'done'
+
+# Utility endpoints
+
+
+@app.route('/util/niccage')
+def niccage():
+    nc = models.Person(name='Nicolas Cage')
+    ba = models.Genre(genre='Bad action')
+
+    l1 = models.Listing(title='Oviedo: The City of Chickens',
+                        description='One last job.',
+                        release_date=datetime.utcnow(),
+                        writers=[nc],
+                        directors=[nc],
+                        actors=[nc],
+                        genres=[ba])
+    l2 = models.Listing(title='Biology: Chemistry in Disguise',
+                        description='One last job.',
+                        release_date=datetime.utcnow(),
+                        writers=[nc],
+                        directors=[nc],
+                        actors=[nc],
+                        genres=[ba])
+
+    db.session.add(l1)
+    db.session.add(l2)
+    db.session.commit()
+
+    return "done"

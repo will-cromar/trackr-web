@@ -51,6 +51,18 @@ class Listing(db.Model):
     genres = db.relationship('Genre',
                              secondary=listing_genres)
 
+    def todict(self):
+        return {
+            'listing_id': self.listing_id,
+            'title': self.title,
+            'description': self.description,
+            'release_date': int(self.release_date.timestamp()),
+            'directors': list(map(Person.todict, self.directors)),
+            'writers': list(map(Person.todict, self.writers)),
+            'actors': list(map(Person.todict, self.actors)),
+            'genres': list(map(Genre.todict, self.genres))
+        }
+
     @property
     def delta(self):
         return self.time - datetime.utcnow()
@@ -63,6 +75,12 @@ class Person(db.Model):
                           autoincrement=True, primary_key=True)
     name = db.Column('name', db.String(128), nullable=False)
 
+    def todict(self):
+        return {
+            'person_id': self.person_id,
+            'name': self.name
+        }
+
 
 class Genre(db.Model):
     __tablename__ = 'genre'
@@ -70,6 +88,12 @@ class Genre(db.Model):
     genre_id = db.Column('genre_id', db.Integer, nullable=False,
                          autoincrement=True, primary_key=True)
     genre = db.Column('genre', db.String(16), nullable=False)
+
+    def todict(self):
+        return {
+            'genre_id': self.genre_id,
+            'genre': self.genre
+        }
 
 
 class Schedule(db.Model):
