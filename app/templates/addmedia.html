@@ -7,7 +7,4 @@
         Time: {{ form.time() }}<br>
         <input type="submit" value="Post"><br>
     </p>
-    {% for movie in movies %}
-    <div><p>[{{ movie.media_id }}] {{ movie.name }} @ <b>{{ movie.releaseDate }}.</b> (Posted by {{ movie.author }})</p></div>
-    {% endfor %}
 {% endblock %}
