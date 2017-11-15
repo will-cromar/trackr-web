@@ -81,6 +81,11 @@ class Person(db.Model):
             'name': self.name
         }
 
+    def make_or_get(name):
+        """If an entry exists with name, return it. Otherwise, make a new one."""
+        q = Person.query.filter(Person.name == name).all()
+        return q[0] if len(q) > 0 else Person(name=name)
+
 
 class Genre(db.Model):
     __tablename__ = 'genre'
@@ -94,6 +99,11 @@ class Genre(db.Model):
             'genre_id': self.genre_id,
             'genre': self.genre
         }
+
+    def make_or_get(name):
+        """If an entry exists with name, return it. Otherwise, make a new one."""
+        q = Genre.query.filter(Genre.genre == name).all()
+        return q[0] if len(q) > 0 else Genre(genre=name)
 
 
 class Schedule(db.Model):
