@@ -30,7 +30,7 @@ listing_genres = db.Table(
 user_subscriptions = db.Table(
     'user_subscriptions', db.Model.metadata,
     db.Column('listing_id', db.Integer, db.ForeignKey('listing.listing_id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.username'))
+    db.Column('user_id', db.String(32), db.ForeignKey('user.username'))
 )
 
 
@@ -41,7 +41,7 @@ class Listing(db.Model):
                            autoincrement=True, primary_key=True)
     title = db.Column('title', db.String(128), nullable=False)
     description = db.Column('description', db.String(4096))
-    release_date = db.Column('release_date', db.Date)
+    release_date = db.Column('release_date', db.DateTime)
     directors = db.relationship('Person',
                                 secondary=listing_directors)
     writers = db.relationship('Person',
@@ -50,6 +50,18 @@ class Listing(db.Model):
                              secondary=listing_actors)
     genres = db.relationship('Genre',
                              secondary=listing_genres)
+
+    def todict(self):
+        return {
+            'listing_id': self.listing_id,
+            'title': self.title,
+            'description': self.description,
+            'release_date': int(self.release_date.timestamp()),
+            'directors': list(map(Person.todict, self.directors)),
+            'writers': list(map(Person.todict, self.writers)),
+            'actors': list(map(Person.todict, self.actors)),
+            'genres': list(map(Genre.todict, self.genres))
+        }
 
     @property
     def delta(self):
@@ -63,6 +75,12 @@ class Person(db.Model):
                           autoincrement=True, primary_key=True)
     name = db.Column('name', db.String(128), nullable=False)
 
+    def todict(self):
+        return {
+            'person_id': self.person_id,
+            'name': self.name
+        }
+
 
 class Genre(db.Model):
     __tablename__ = 'genre'
@@ -71,62 +89,24 @@ class Genre(db.Model):
                          autoincrement=True, primary_key=True)
     genre = db.Column('genre', db.String(16), nullable=False)
 
+    def todict(self):
+        return {
+            'genre_id': self.genre_id,
+            'genre': self.genre
+        }
+
 
 class Schedule(db.Model):
     __tablename__ = 'schedule'
 
     schedule_id = db.Column('schedule_id', db.Integer, nullable=False,
                             autoincrement=True, primary_key=True)
-    listing_id = db.Column('listing_id', db.String(16),
+    listing_id = db.Column('listing_id', db.Integer,
                            db.ForeignKey('listing.listing_id'))
     title = db.Column('title', db.String(128))
     season = db.Column('season', db.Integer)
     episode = db.Column('episode', db.Integer)
     date = db.Column('datetime', db.DateTime)
-
-# movies = db.Table(
-#         'movies',
-#         db.Column('title', db.String(128)),
-#         db.Column('listing_id', db.Integer),
-#         db.Column('release_date', db.String(64)),
-#         db.Column('genre', db.String(64)),
-#         db.Column('writers', db.String(64)),
-#         db.Column('directors', db.String(64)),
-#         db.Column('actors', db.String(64)),
-#         db.Column('description', db.String(4096)),
-# )
-#
-#
-# 
-# class Movie(db.Model):
-#     __tablename__ = 'movies'
-#     __table_args__ = {'extend_existing': True}
-#
-#     title = db.Column('title', db.String(128), nullable=False)
-#     listing_id = db.Column('listing_id', db.String(16), nullable=False, primary_key=True)
-#     release_date = db.Column('release_date', db.String(64))
-#     genre = db.Column('genre', db.String(64))
-#     writers = db.Column('writers', db.String(64))
-#     directors = db.Column('directors', db.String(64))
-#     actors = db.Column('actors', db.String(64))
-#     description = db.Column('description', db.String(4096))
-#
-# class Show(db.Model):
-#     __tablename__ = 'shows'
-#
-#     title = db.Column('title', db.String(128), nullable=False)
-#     listing_id = db.Column('listing_id', db.String(16), nullable=False, primary_key=True)
-#     season = db.Column('season', db.Integer)
-#     episode = db.Column('episode', db.String(64))
-#     episode_title = db.Column('episode_title', db.String(64))
-#     release_date = db.Column('release_date', db.String(64))
-#     airtime = db.Column('airtime', db.String(64))
-#     genre = db.Column('genre', db.String(64))
-#     writers = db.Column('writers', db.String(64))
-#     directors = db.Column('directors', db.String(64))
-#     actors = db.Column('actors', db.String(64))
-#     description = db.Column('description', db.String(4096))
-
 
 
 class User(db.Model, flask_login.UserMixin):
