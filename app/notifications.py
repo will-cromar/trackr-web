@@ -1,22 +1,20 @@
 from datetime import date, datetime, timedelta
 from app import db, models
-from flask.json import jsonify
-from . import recommender
+import .recommender
 import random
-import json
 
 
 '''
     Returns a JSON of all recommendation and schedule notifications
 '''
-def get_notifications_json():
+def get_notifications():
+
+
     notification_dict = {}
     notification_dict['recommendations'] = __fetch_recommendation_data()
     notification_dict['schedules'] = __fetch_schedule_data()
 
-    json_data = jsonify(notification_dict)
-
-    return json_data
+    return notification_dict
 
 
 '''
@@ -49,11 +47,13 @@ def __fetch_recommendation_data():
 
         message = "Based on your interest in {}, we recommend you try {}!".format(source_title, recommendation_title)
 
+        t_data = {}
+        t_data['source_id'] = rand_listing.listing_id
+        t_data['recommendation_id'] = recommendation.listing_id
+        t_data['message'] = message
+
         data = {}
-        data['username'] = user.username
-        data['source_id'] = rand_listing.listing_id
-        data['recommendation_id'] = recommendation.listing_id
-        data['message'] = message
+        data[user.username] = t_data
 
         recommendation_data.append(data)
 
@@ -95,8 +95,7 @@ def __fetch_schedule_data():
                 user_schedule_data.append(data)
 
         schedule_dict = {}
-        schedule_dict['username'] = user.username
-        schedule_dict['schedule'] = user_schedule_data
+        schedule_dict[user.username] = user_schedule_data
         schedule_data.append(schedule_dict)
 
     return schedule_data
