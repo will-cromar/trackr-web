@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<table style="width:match_content">
+    {% for user in users %}
+    <tr align="left">
+        <th>{{ user.username }}</th>
+        <th><a href="promote?user={{ user.username }}">Promote to admin</a></th>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+

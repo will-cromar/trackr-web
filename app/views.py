@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, request
 from flask_login import login_user, login_required, logout_user, current_user
 from app import app, db, models, login_manager
 from .utils import passwordHash
@@ -60,16 +60,6 @@ def postmovie():
     return redirect('/addmovie')
 
 
-@app.route('/addshow')
-@login_required
-def addshow():
-    """Form to add new shows to the database"""
-    form = ShowForm()
-    return render_template('addshow.html',
-                           title='Home',
-                           form=form)
-
-
 @app.route('/signup')
 def signup():
     """Form to create user account"""
@@ -122,6 +112,30 @@ def checkcredentials():
         return redirect('/login')
 
     return redirect('/')
+
+@app.route('/manageusers')
+@login_required
+def manageusers():
+    """Allows admin users to promote other users"""
+    return render_template('manageusers.html',
+                           users=models.User.query.all())
+
+
+@app.route('/promote')
+@login_required
+def promote():
+    if not current_user.is_admin:
+        flash("You must be an admin to do this.")
+        return redirect('/login')
+
+    username = request.args.get('user')
+    u = models.User.query.get(username)
+    u.is_admin = True
+    db.session.add(u)
+    db.session.commit()
+
+    flash("{} has been promoted".format(username))
+    return redirect('/manageusers')
 
 
 @app.route('/whoami')
