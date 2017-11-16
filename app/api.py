@@ -1,9 +1,9 @@
 from app import app, models, cache, db
 from .utils import passwordHash, generate_random_listings, model_dict
+from .notifications import get_notifications
 from flask import request
 from flask.json import jsonify
 from flask_jwt import JWT, jwt_required, current_identity
-
 import json
 import time
 from datetime import datetime
@@ -35,8 +35,20 @@ def protected():
 @jwt_required()
 def notifications():
     """Fetches notifications in cache for uesr based on JWT token"""
-    notifications_string = cache.get(current_identity.username)
-    notifications = json.loads(notifications_string)
+
+    if current_identity.username not in cache.keys():
+        notifications = get_notifications()
+        for notif in notifications:
+            print(notifications[notif])
+            cache.set(notif, json.dumps(notifications[notif]))
+
+        #print("Keys: {}".format(cache.get('alex')))
+
+    else:
+        notifications_string = cache.get(current_identity.username)
+        notifications = json.loads(notifications_string)
+
+
 
     return jsonify({'notifications': notifications})
 
@@ -73,7 +85,6 @@ def query():
 
     res = list(map(models.Listing.todict, listings))
     return jsonify({'results': res})
-
 
 @app.route('/api/getlisting')
 def getlisting():
@@ -117,6 +128,7 @@ def genreslist():
 
 @app.route('/api/cachedump')
 def cachedump():
+
     return jsonify({key: cache[key] for key in cache.keys()})
 
 
@@ -125,12 +137,11 @@ def refreshcache():
     userids = map(models.User.get_id, models.User.query.all())
 
     for u in userids:
+        cache.delete(u)
         # TODO: Actually look up subscriptions
-        notification = {'listing_id': 0,
-                        'message': 'You have a notification!',
-                        'time': int(time.time())}
+        notifications = get_notifications()
 
-        cache.set(u, json.dumps([notification]))
+        cache.set(u, json.dumps([notifications]))
 
     return 'done'
 
