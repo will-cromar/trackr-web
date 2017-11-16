@@ -56,22 +56,23 @@ def createaccount():
 @app.route('/api/query')
 def query():
     q = request.args.get('query')
+    if q is None:
+        listings = models.Listing.query.all()
+    else:
+        qperson = models.Person.make_or_get(q)
+        qgenre = models.Genre.make_or_get(q)
 
-    # TODO: Actually filter these
-    listings = models.Listing.query.all()
+        listings = models.Listing.query.all()
+        listings = models.Listing.query.filter(
+            (models.Listing.title.contains(q)) |
+            (models.Listing.description.contains(q)) |
+            (models.Listing.directors.contains(qperson)) |
+            (models.Listing.writers.contains(qperson)) |
+            (models.Listing.actors.contains(qperson)) |
+            (models.Listing.genres.contains(qgenre)))
 
     res = list(map(models.Listing.todict, listings))
     return jsonify({'results': res})
-
-
-@app.route('/datadump')
-def queryall():
-    """Prints all movie names and release dates in database"""
-    movies = models.Movie.query.all()
-    moviesJson = [{"name": m.name, "releaseDate": m.releaseDate.timestamp()}
-                  for m in movies]
-
-    return jsonify(moviesJson)
 
 
 @app.route('/api/addsubscription', methods=['POST'])
