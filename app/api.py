@@ -71,17 +71,19 @@ def query():
     if q is None:
         listings = models.Listing.query.all()
     else:
-        qperson = models.Person.make_or_get(q)
-        qgenre = models.Genre.make_or_get(q)
-
-        listings = models.Listing.query.all()
         listings = models.Listing.query.filter(
             (models.Listing.title == q) |
-            (models.Listing.description == q) |
-            (models.Listing.directors.contains(qperson)) |
-            (models.Listing.writers.contains(qperson)) |
-            (models.Listing.actors.contains(qperson)) |
-            (models.Listing.genres.contains(qgenre))).limit(10)
+            (models.Listing.description == q)).all()
+
+        qgenre = models.Genre.query.filter_by(genre=q).first()
+        if qgenre:
+            listings.extend(qgenre.members)
+
+        qperson = models.Person.query.filter_by(name=q).first()
+        if qperson:
+            listings.extend(qperson.directed)
+            listings.extend(qperson.wrote)
+            listings.extend(qperson.acted)
 
     res = list(map(models.Listing.todict, listings))
     return jsonify({'results': res})

@@ -43,12 +43,16 @@ class Listing(db.Model):
     description = db.Column('description', db.String(4096))
     release_date = db.Column('release_date', db.DateTime)
     directors = db.relationship('Person',
+                                back_populates='directed',
                                 secondary=listing_directors)
     writers = db.relationship('Person',
+                              back_populates='wrote',
                               secondary=listing_writers)
     actors = db.relationship('Person',
+                             back_populates='acted',
                              secondary=listing_actors)
     genres = db.relationship('Genre',
+                             back_populates='members',
                              secondary=listing_genres)
 
     def todict(self):
@@ -80,6 +84,18 @@ class Person(db.Model):
     person_id = db.Column('person_id', db.Integer, nullable=False,
                           autoincrement=True, primary_key=True)
     name = db.Column('name', db.String(128), nullable=False)
+    directed = db.relationship(
+        'Listing',
+        back_populates='directors',
+        secondary=listing_directors)
+    wrote = db.relationship(
+        'Listing',
+        back_populates='writers',
+        secondary=listing_writers)
+    acted = db.relationship(
+        'Listing',
+        back_populates='actors',
+        secondary=listing_actors)
 
     def todict(self):
         return {
@@ -99,6 +115,10 @@ class Genre(db.Model):
     genre_id = db.Column('genre_id', db.Integer, nullable=False,
                          autoincrement=True, primary_key=True)
     genre = db.Column('genre', db.String(16), nullable=False)
+    members = db.relationship(
+        'Listing',
+        back_populates='genres',
+        secondary=listing_genres)
 
     def todict(self):
         return {
