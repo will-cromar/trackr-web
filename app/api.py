@@ -64,12 +64,12 @@ def query():
 
         listings = models.Listing.query.all()
         listings = models.Listing.query.filter(
-            (models.Listing.title.contains(q)) |
-            (models.Listing.description.contains(q)) |
+            (models.Listing.title == q) |
+            (models.Listing.description == q) |
             (models.Listing.directors.contains(qperson)) |
             (models.Listing.writers.contains(qperson)) |
             (models.Listing.actors.contains(qperson)) |
-            (models.Listing.genres.contains(qgenre)))
+            (models.Listing.genres.contains(qgenre))).limit(10)
 
     res = list(map(models.Listing.todict, listings))
     return jsonify({'results': res})
