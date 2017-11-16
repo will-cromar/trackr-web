@@ -75,6 +75,16 @@ def query():
     return jsonify({'results': res})
 
 
+@app.route('/api/getlisting')
+def getlisting():
+    q = request.args.get('listing_id')
+
+    if not q:
+        return jsonify({})
+
+    return jsonify(models.Listing.query.get(q).todict())
+
+
 @app.route('/api/addsubscription', methods=['POST'])
 @jwt_required()
 def addsubscription():
