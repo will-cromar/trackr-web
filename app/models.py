@@ -125,6 +125,7 @@ class User(db.Model, flask_login.UserMixin):
     username = db.Column('username', db.String(32), nullable=False,
                          primary_key=True)
     password = db.Column('password', db.String(128), nullable=False)
+    is_admin = db.Column('is_admin', db.Boolean, default=False)
     subscriptions = db.relationship('Listing',
                                     secondary=user_subscriptions)
 

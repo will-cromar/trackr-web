@@ -32,7 +32,9 @@ def addmovie():
 def postmovie():
     """Submit Movie entry form"""
     form = MovieForm()
-    if form.validate_on_submit():
+    if not current_user.is_admin:
+        flash("You must be an admin to make changes to the database.")
+    elif form.validate_on_submit():
         director_strings = form.directors.data.split(",")
         directors = list(map(models.Person.make_or_get, director_strings))
         writer_strings = form.writers.data.split(",")

