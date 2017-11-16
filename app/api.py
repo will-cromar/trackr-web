@@ -172,3 +172,12 @@ def equifax():
     db.session.add(u)
     db.session.commit()
     return "done :)"
+
+
+@app.route('/util/fill')
+def fill():
+    with open('trackr_mini_dump.sql') as infile:
+        s = infile.readlines()
+        for row in s:
+            if "NULL" not in row:
+                db.engine.execute(row)

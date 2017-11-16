@@ -52,7 +52,7 @@ class Listing(db.Model):
                              secondary=listing_genres)
 
     def todict(self):
-        return {
+        res = {
             'listing_id': self.listing_id,
             'title': self.title,
             'description': self.description,
@@ -60,8 +60,14 @@ class Listing(db.Model):
             'directors': list(map(Person.todict, self.directors)),
             'writers': list(map(Person.todict, self.writers)),
             'actors': list(map(Person.todict, self.actors)),
-            'genres': list(map(Genre.todict, self.genres))
+            'genres': list(map(Genre.todict, self.genres)),
         }
+
+        schedules = Schedule.query.filter(Schedule.listing_id == self.listing_id).all()
+        if len(schedules) > 0:
+            res['schedules'] = list(map(Schedule.todict, schedules))
+
+        return res
 
     @property
     def delta(self):
@@ -117,6 +123,16 @@ class Schedule(db.Model):
     season = db.Column('season', db.Integer)
     episode = db.Column('episode', db.Integer)
     date = db.Column('datetime', db.DateTime)
+
+    def todict(self):
+        return {
+            'schedule_id': self.schedule_id,
+            'listing_id': self.listing_id,
+            'title': self.title,
+            'season': self.season,
+            'episode': self.episode,
+            'date': int(self.date.timestamp()),
+        }
 
 
 class User(db.Model, flask_login.UserMixin):
