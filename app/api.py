@@ -176,8 +176,13 @@ def equifax():
 
 @app.route('/util/fill')
 def fill():
+    # db.drop_all()
+    db.create_all()
     with open('trackr_mini_dump.sql') as infile:
         s = infile.readlines()
         for row in s:
-            if "NULL" not in row:
-                db.engine.execute(row)
+            if "NULL" not in row and row.strip() is not "":
+                try:
+                    db.engine.execute(row)
+                except:
+                    pass
