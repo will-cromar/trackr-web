@@ -1,10 +1,8 @@
 from flask import render_template, flash, redirect
 from flask_login import login_user, login_required, logout_user, current_user
-from datetime import datetime
 from app import app, db, models, login_manager
 from .utils import passwordHash
-from .forms import PostForm, LoginForm, SignupForm
-
+from .forms import MovieForm, ShowForm, LoginForm, SignupForm
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -18,37 +16,56 @@ def index():
     return render_template('base.html')
 
 
-@app.route('/addmedia')
-@app.route('/admin')
+@app.route('/addmovie')
 @login_required
-def addmedia():
-    """Form to add new content to the database"""
-    form = PostForm()
-
-    movies = models.Movie.query.all()
-    return render_template('addmedia.html',
+def addmovie():
+    """Form to add new movies to the database"""
+    form = MovieForm()
+    # movies = models.Movie.query.all()
+    return render_template('addmovie.html',
                            title='Home',
-                           movies=movies,
                            form=form)
 
 
-@app.route('/postmedia', methods=['POST'])
+@app.route('/postmovie', methods=['POST'])
 @login_required
-def postmedia():
-    """Submit content entry form"""
-    form = PostForm()
+def postmovie():
+    """Submit Movie entry form"""
+    form = MovieForm()
     if form.validate_on_submit():
-        m = models.Movie(name=form.title.data,
-                         releaseDate=datetime.fromtimestamp(form.time.data),
-                         author=current_user.username)
+        director_strings = form.directors.data.split(",")
+        directors = list(map(models.Person.make_or_get, director_strings))
+        writer_strings = form.writers.data.split(",")
+        writers = list(map(models.Person.make_or_get, writer_strings))
+        actor_strings = form.actors.data.split(",")
+        actors = list(map(models.Person.make_or_get, actor_strings))
+        genre_strings = form.genres.data.split(",")
+        genres = list(map(models.Genre.make_or_get, genre_strings))
+        m = models.Listing(title=form.title.data,
+                           description=form.description.data,
+                           release_date=form.release_date.data,
+                           directors=directors,
+                           writers=writers,
+                           actors=actors,
+                           genres=genres)
         db.session.add(m)
         db.session.commit()
-        flash("Submitted entry for ID {}".format(m.media_id))
+        flash("Submitted entry for ID {}".format(m.title))
     else:
         for fieldName, errorMessage in form.errors.items():
             flash("ERROR: {} {}".format(fieldName, errorMessage))
 
-    return redirect('/addmedia')
+    return redirect('/addmovie')
+
+
+@app.route('/addshow')
+@login_required
+def addshow():
+    """Form to add new shows to the database"""
+    form = ShowForm()
+    return render_template('addshow.html',
+                           title='Home',
+                           form=form)
 
 
 @app.route('/signup')

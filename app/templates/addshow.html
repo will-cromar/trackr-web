@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="/postshow" method="post" name="postshow">
+      {{ form.hidden_tag() }}
+      <table style="width:match_content">
+        <tr align="left" >
+          <th>Title:</th>
+          <th>{{ form.title(size=60) }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Genre:</th>
+          <th>{{ form.genre() }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Description:</th>
+          <th>{{ form.description() }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Season:</th>
+          <th>{{ form.season() }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Episode:</th>
+          <th>{{ form.episode() }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Episode Title:     </th>
+          <th>{{ form.episode_title() }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Release Date:</th>
+          <th>{{ form.date() }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Writers:</th>
+          <th>{{ form.writers() }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Directors:</th>
+          <th>{{ form.directors() }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Actors:</th>
+          <th>{{ form.actors() }}</th>
+        </tr>
+
+      </table>
+      <input type="submit" value="Post">
+
+{% endblock %}

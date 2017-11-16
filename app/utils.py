@@ -40,3 +40,10 @@ def model_dict(item):
     """Returns a dict containing the data from an SQLAlchemy model instance"""
     return {k: v for k, v in item.__dict__.items()
             if not str(k).startswith("_")}
+
+
+def make_or_get_person(model, **kwargs):
+    """Really hacky function. Sorry."""
+    q = model.query.filter(**kwargs).all()
+
+    return q[0] if len(q) > 0 else model(**kwargs)
