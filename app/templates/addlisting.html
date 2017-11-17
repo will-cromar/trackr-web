@@ -3,6 +3,10 @@
     <form action="/addlisting/submit" method="post" name="postmovie">
     {{ form.hidden_tag() }}
     <table style="width:match_content">
+      <tr align="left">
+        <th>Update ID (optional):</th>
+        <th>{{ form.update_id() }}</th>
+      </tr>
 
       <tr align="left" >
         <th>Title:</th>
@@ -10,7 +14,7 @@
       </tr>
 
       <tr align="left" >
-        <th>Genre:</th>
+        <th>Genres:</th>
         <th>{{ form.genres() }}</th>
       </tr>
 

@@ -35,6 +35,14 @@ def postmovie():
     if not current_user.is_admin:
         flash("You must be an admin to make changes to the database.")
     elif form.validate_on_submit():
+        if form.update_id.data:
+            m = models.Listing.query.get(form.update_id.data)
+            if m is None:
+                flash("Update ID is invalid.")
+                return redirect('/addlisting')
+        else:
+            m = models.Listing()
+
         director_strings = form.directors.data.split(",")
         directors = list(map(models.Person.make_or_get, director_strings))
         writer_strings = form.writers.data.split(",")
@@ -43,13 +51,15 @@ def postmovie():
         actors = list(map(models.Person.make_or_get, actor_strings))
         genre_strings = form.genres.data.split(",")
         genres = list(map(models.Genre.make_or_get, genre_strings))
-        m = models.Listing(title=form.title.data,
-                           description=form.description.data,
-                           release_date=form.release_date.data,
-                           directors=directors,
-                           writers=writers,
-                           actors=actors,
-                           genres=genres)
+
+        m.title = form.title.data
+        m.description = form.description.data
+        m.release_date = form.release_date.data
+        m.directors = directors
+        m.writers = writers
+        m.actors = actors
+        m.genres = genres
+
         db.session.add(m)
         db.session.commit()
         flash("Submitted entry as ID {}".format(m.listing_id))
