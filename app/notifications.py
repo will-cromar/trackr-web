@@ -51,7 +51,8 @@ def __fetch_recommendation_data(user):
     t_data['time'] = int(recommendation.release_date.timestamp())
     t_data['message'] = message
 
-    return t_data
+    return [t_data]
+
 
 '''
     Gathers a list of Schedule data per user and returns a dictionary of that data
