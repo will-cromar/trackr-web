@@ -50,7 +50,7 @@ def __fetch_recommendation_data(user):
     t_data['listing_id'] = recommendation.listing_id
     t_data['time'] = int(recommendation.release_date.timestamp())
     t_data['message'] = "We recommend you try {}!".format(recommendation_title)
-    t_data['submessge'] = "Based on your interest in {}".format(source_title)
+    t_data['submessage'] = "Based on your interest in {}".format(source_title)
 
     return [t_data]
 
