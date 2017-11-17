@@ -133,14 +133,12 @@ def cachedump():
 def refreshcache():
     userids = map(models.User.get_id, models.User.query.all())
 
+    notifications = get_notifications()
     for u in userids:
-        cache.delete(u)
-        # TODO: Actually look up subscriptions
-        notifications = get_notifications()
-
-        cache.set(u, json.dumps([notifications[u]]))
+        cache.set(u, json.dumps(notifications[u]))
 
     return 'done'
+
 
 # Utility endpoints
 
