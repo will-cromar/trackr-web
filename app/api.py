@@ -138,7 +138,7 @@ def refreshcache():
         # TODO: Actually look up subscriptions
         notifications = get_notifications()
 
-        cache.set(u, json.dumps([notifications]))
+        cache.set(u, json.dumps([notifications[u]]))
 
     return 'done'
 
