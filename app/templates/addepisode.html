@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="/addepisode/submit" method="post" name="postshow">
+      {{ form.hidden_tag() }}
+      <table style="width:match_content">
+        <tr align="left">
+          <th>Listing ID:</th>
+          <th>{{ form.listing_id() }}</th>
+        </tr>
+        <tr align="left" >
+          <th>Episode Title:</th>
+          <th>{{ form.title(size=60) }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Season:</th>
+          <th>{{ form.season() }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Episode:</th>
+          <th>{{ form.episode() }}</th>
+        </tr>
+
+        <tr align="left" >
+          <th>Release Date:</th>
+          <th>{{ form.date() }}</th>
+        </tr>
+
+        <tr align="left">
+          <th>Release Time (UTC):</th>
+          <th>{{ form.hour(size=2) }}:{{ form.minute(size=2) }}</th>
+        </tr>
+
+      </table>
+      <input type="submit" value="Post">
+
+{% endblock %}

@@ -2,7 +2,8 @@ from flask import render_template, flash, redirect, request
 from flask_login import login_user, login_required, logout_user, current_user
 from app import app, db, models, login_manager
 from .utils import passwordHash
-from .forms import MovieForm, ShowForm, LoginForm, SignupForm
+from .forms import MovieForm, EpisodeForm, LoginForm, SignupForm
+import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -16,18 +17,17 @@ def index():
     return render_template('base.html')
 
 
-@app.route('/addmovie')
+@app.route('/addlisting')
 @login_required
 def addmovie():
     """Form to add new movies to the database"""
     form = MovieForm()
-    # movies = models.Movie.query.all()
-    return render_template('addmovie.html',
-                           title='Home',
+    return render_template('addlisting.html',
+                           title='Add Listing',
                            form=form)
 
 
-@app.route('/postmovie', methods=['POST'])
+@app.route('/addlisting/submit', methods=['POST'])
 @login_required
 def postmovie():
     """Submit Movie entry form"""
@@ -52,12 +52,57 @@ def postmovie():
                            genres=genres)
         db.session.add(m)
         db.session.commit()
-        flash("Submitted entry for ID {}".format(m.title))
+        flash("Submitted entry as ID {}".format(m.listing_id))
     else:
         for fieldName, errorMessage in form.errors.items():
             flash("ERROR: {} {}".format(fieldName, errorMessage))
 
-    return redirect('/addmovie')
+    return redirect('/addlisting')
+
+
+@app.route('/addepisode')
+@login_required
+def addepisode():
+    form = EpisodeForm()
+    return render_template('addepisode.html',
+                           title='Add Episode',
+                           form=form)
+
+
+@app.route('/addepisode/submit', methods=['POST'])
+@login_required
+def submitepisode():
+    form = EpisodeForm()
+
+    if not current_user.is_admin:
+        flash("You must be an admin to make changes to the database.")
+    elif form.validate_on_submit():
+        listing = models.Listing.query.filter_by(
+            listing_id=form.listing_id.data).first()
+        if not listing:
+            flash("Listing ID is not valid")
+            return redirect('/addepisode')
+
+        date = form.date.data
+        delta = datetime.timedelta(hours=form.hour.data,
+                                   minutes=form.minute.data)
+        dt = date + delta
+
+        s = models.Schedule(
+            listing_id=form.listing_id.data,
+            title=form.title.data,
+            season=form.season.data,
+            episode=form.episode.data,
+            date=dt
+        )
+        db.session.add(s)
+        db.session.commit()
+        flash("Added episode ID {} successfully".format(s.schedule_id))
+    else:
+        for fieldName, errorMessage in form.errors.items():
+            flash("ERROR: {} {}".format(fieldName, errorMessage))
+
+    return redirect('/addepisode')
 
 
 @app.route('/signup')

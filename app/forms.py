@@ -1,30 +1,27 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, TextAreaField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, InputRequired, NumberRange
 
 
 class MovieForm(FlaskForm):
     title = StringField('title', validators=[DataRequired()])
     genres = StringField('genres', validators=[DataRequired()])
     description = TextAreaField('description')
-    release_date = DateField('release_date(m/d/Y)', format='%m/%d/%Y')
+    release_date = DateField('release_date')
     writers = StringField('writers')
     directors = StringField('directors')
     actors = StringField('actors')
 
 
-class ShowForm(FlaskForm):
+class EpisodeForm(FlaskForm):
+    listing_id = IntegerField('listing_id', validators=[DataRequired()])
     title = StringField('title', validators=[DataRequired()])
-    description = TextAreaField('description')
-    genre = StringField('genre', validators=[DataRequired()])
-    season = IntegerField('season')
-    episode = IntegerField('episode')
-    episode_title = StringField('episode_title')
-    date = DateField('date(m/d/Y)', format='%m/%d/%Y')
-    writers = StringField('writers')
-    directors = StringField('directors')
-    actors = StringField('actors')
+    season = IntegerField('season', validators=[DataRequired()])
+    episode = IntegerField('episode', validators=[DataRequired()])
+    date = DateField('date', validators=[DataRequired()])
+    hour = IntegerField('hour', validators=[InputRequired(), NumberRange(0, 23)])
+    minute = IntegerField('minute', validators=[InputRequired(), NumberRange(0, 59)])
 
 
 class LoginForm(FlaskForm):
