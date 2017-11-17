@@ -9,18 +9,14 @@ import time
     Returns a JSON of all recommendation and schedule notifications
 '''
 def get_notifications():
-
-
     notification_dict = {}
-
 
     users = db.session.query(models.User).all()
 
     for user in users:
-        user_data = {}
-        user_data['recommendations'] = __fetch_recommendation_data(user)
-        user_data['schedules'] = __fetch_schedule_data(user)
-        notification_dict[user.username] = user_data
+        recommendations = __fetch_recommendation_data(user)
+        reminders = __fetch_schedule_data(user)
+        notification_dict[user.username] = recommendations + reminders
 
     return notification_dict
 
@@ -29,9 +25,7 @@ def get_notifications():
     Gathers a list of recommendations (1 per user) and returns a dictionary of that data
 '''
 def __fetch_recommendation_data(user):
-
     recommendation_data = []
-
 
     subs = user.subscriptions
 
@@ -53,8 +47,8 @@ def __fetch_recommendation_data(user):
     message = "Based on your interest in {}, we recommend you try {}!".format(source_title, recommendation_title)
 
     t_data = {}
-    t_data['source_id'] = rand_listing.listing_id
-    t_data['recommendation_id'] = recommendation.listing_id
+    t_data['listing_id'] = recommendation.listing_id
+    t_data['time'] = int(recommendation.release_date.timestamp())
     t_data['message'] = message
 
     return t_data
@@ -83,7 +77,7 @@ def __fetch_schedule_data(user):
 
             data = {}
             data['listing_id'] = listing_id
-            data['datetime'] = time.mktime(air_date.timetuple())
+            data['time'] = int(time.mktime(air_date.timetuple()))
             data['message'] = message
             user_schedule_data.append(data)
 

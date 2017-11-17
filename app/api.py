@@ -41,14 +41,9 @@ def notifications():
         for notif in notifications:
             print(notifications[notif])
             cache.set(notif, json.dumps(notifications[notif]))
-
-        #print("Keys: {}".format(cache.get('alex')))
-
     else:
         notifications_string = cache.get(current_identity.username)
         notifications = json.loads(notifications_string)
-
-
 
     return jsonify({'notifications': notifications})
 
