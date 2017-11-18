@@ -15,7 +15,7 @@ def load_user(user_id):
 @app.route('/')
 def index():
     """Home page"""
-    return render_template('base.html')
+    return render_template('home.html')
 
 
 @app.route('/addlisting')
