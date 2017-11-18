@@ -1,35 +1,117 @@
 <html>
 <head>
     {% if title %}
-    <title>{{title}} - Movie tracker</title>
+    <title>{{title}} - Trackr</title>
     {% else %}
-    <title>Movie tracker</title>
+    <title>Trackr</title>
     {% endif %}
+    <style>
+        body {
+            background-color: #fdfdfd;
+            margin: 0;
+        }
+        .header {
+            padding-top: 20px;
+            width: 100%;
+            background-color: #333;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            padding: 16px;
+        }
+        .content {
+            margin: 0 auto;
+            width: 960px;
+        }
+        .navbar-container {
+            background-color: #f3f3f3;
+        }
+        ul.navbar {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        ul.navbar li {
+            float: left;
+        }
+        ul.navbar li.account-link {
+            float: right;
+        }
+        ul.navbar li a {
+            display: block;
+            color: #666;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        ul.navbar li a:hover {
+            background-color: #ddd;
+        }
+        ul.navbar li a:active {
+            color: #fefefe;
+            background-color: #008CBA;
+        }
+        .main {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            height: 100%;
+            padding: 26px;
+            background-color: #fefefe;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <div>
-        <a href="/">Home</a> |
-        <a href="/addlisting">Add Listing</a> |
-        <a href="/addepisode">Add Episode</a> |
-        <a href="/login">Login</a> |
-        <a href="/signup">Sign up</a> |
-        <a href="/logout">Log out</a>
+    <div class="header">
+        <div class="content">
+            <h1 class="main-title">Trackr</h1>
+        </div>
     </div>
-    <hr>
-    {% if current_user.is_anonymous %}
-    <h1>Log in for a very special message</h1>
-    {% else %}
-    <h1>Hello, {{ current_user.username }}</h1>
-    {% endif %}
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
+    <div class="navbar-container">
+        <div class="content">
+            <ul class="navbar">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                <li>
+                    <a href="/addlisting">Add Listing</a>
+                </li>
+                <li>
+                    <a href="/addepisode">Add Episode</a> 
+                </li>
+                <li>
+                    <a href="/manageusers">Manage Users</a>
+                </li>
+                {% if current_user.is_anonymous %}
+                <li class="account-link">
+                    <a href="/login">Login</a>
+                </li>
+                <li class="account-link">
+                    <a href="/signup">Sign up</a>
+                </li>
+                {% else %}
+                <li class="account-link">
+                    <a href="/logout">Log out</a>
+                </li>
+                <li class="account-link">
+                    <a>Logged in as {{ current_user.username }}</a>
+                </li>
+                {% endif %}
             </ul>
-        {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}
+        </div>
+    </div>
+    <div class="main content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
 </body>
 </html>
