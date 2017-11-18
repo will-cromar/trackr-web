@@ -1,5 +1,6 @@
-import math
 from app import db, models
+import numpy as np
+from sklearn.cluster import AffinityPropagation
 
 """
     Note: Currently requires a call from within the web server.
@@ -40,6 +41,43 @@ def get_closest_recommendation(listing_1):
             top_listing = l1
 
     return top_listing
+
+
+def get_neighbors(listings, target_idx=-1):
+    """Returns a list of listings similar to the one at target_idx."""
+    clusters = get_affinity_clusters(listings)
+    target_cluster = clusters[target_idx]
+
+    res = []
+    for listing, cid in zip(listings, clusters):
+        if cid == target_cluster:
+            res.append(listing)
+
+    return res
+
+
+def get_affinity_clusters(listings):
+    """Returns a list of cluster IDs based on relative similarity between
+    listings."""
+    a = get_similarity_matrix(listings)
+
+    clf = AffinityPropagation(affinity='precomputed')
+    clusters = clf.fit_predict(a)
+
+    return clusters
+
+
+def get_similarity_matrix(listings):
+    """Returns a numpy matrix of the affinities between listings."""
+    n = len(listings)
+    m = np.zeros((n, n))
+
+    for i, l1 in enumerate(listings):
+        for j, l2 in enumerate(listings):
+            m[i, j] = __calc_similarity_score(l1, l2)[0]
+
+    return m
+
 
 """
     Similarity Score is determined by counting the number of
