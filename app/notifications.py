@@ -1,22 +1,21 @@
 from datetime import date, timedelta
-from app import db, models
+from app import db, models, cache
 from .recommender import get_neighbors
 import random
 import time
+import json
 
 
-def get_notifications():
-    """Returns a JSON of all recommendation and schedule notifications"""
-    notification_dict = {}
-
+def batch_notifications():
+    """Fills cache with JSON serialized notification dicts."""
     users = db.session.query(models.User).all()
 
     for user in users:
         recommendation = __fetch_recommendation(user)
         reminders = __fetch_schedule_data(user)
-        notification_dict[user.username] = recommendation + reminders
-
-    return notification_dict
+        notifications = recommendation + reminders
+        for n in notifications:
+            cache.lpush(user.username, json.dumps(n))
 
 
 def __fetch_recommendation(user):

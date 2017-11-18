@@ -1,12 +1,11 @@
 from app import app, models, cache, db
 from .utils import passwordHash, generate_random_listings, model_dict
-from .notifications import get_notifications
+from .notifications import batch_notifications
 from flask import request
 from flask.json import jsonify
 from flask_jwt import JWT, jwt_required, current_identity
 import json
-import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def authenticate(username, password):
@@ -36,16 +35,8 @@ def protected():
 def notifications():
     """Fetches notifications in cache for uesr based on JWT token"""
 
-    if current_identity.username not in cache.keys():
-        notifications = get_notifications()
-        for notif in notifications:
-            print(notifications[notif])
-            cache.set(notif, json.dumps(notifications[notif]))
-    else:
-        notifications_string = cache.get(current_identity.username)
-        notifications = json.loads(notifications_string)
-
-    return jsonify({'notifications': notifications})
+    key = current_identity.username
+    return jsonify({'notifications': list(map(json.loads, cache.lrange(key, 0, -1)))})
 
 
 @app.route('/api/createaccount', methods=['POST'])
@@ -82,6 +73,7 @@ def query():
 
     res = list(map(models.Listing.todict, listings))
     return jsonify({'results': res})
+
 
 @app.route('/api/getlisting')
 def getlisting():
@@ -125,19 +117,16 @@ def genreslist():
 
 @app.route('/api/cachedump')
 def cachedump():
-
-    return jsonify({key: cache[key] for key in cache.keys()})
+    return jsonify({key: list(map(json.loads, cache.lrange(key, 0, -1)))
+                    for key in cache.keys()})
 
 
 @app.route('/api/refreshcache')
 def refreshcache():
-    userids = map(models.User.get_id, models.User.query.all())
+    cache.flushall()
+    batch_notifications()
 
-    notifications = get_notifications()
-    for u in userids:
-        cache.set(u, json.dumps(notifications[u]))
-
-    return 'done'
+    return "done"
 
 
 # Utility endpoints
@@ -146,22 +135,24 @@ def refreshcache():
 @app.route('/util/niccage')
 def niccage():
     nc = models.Person(name='Nicolas Cage')
-    ba = models.Genre(genre='Bad action')
+    ba = models.Genre(genre_id=1337, genre='Bad action')
 
     l1 = models.Listing(title='Oviedo: The City of Chickens',
                         description='One last job.',
-                        release_date=datetime.utcnow(),
+                        release_date=datetime.utcnow() + timedelta(days=2),
                         writers=[nc],
                         directors=[nc],
                         actors=[nc],
-                        genres=[ba])
+                        genres=[ba],
+                        subscribers=[models.User.query.get('admin')])
     l2 = models.Listing(title='Biology: Chemistry in Disguise',
                         description='One last job.',
-                        release_date=datetime.utcnow(),
+                        release_date=datetime.utcnow() + timedelta(days=4),
                         writers=[nc],
                         directors=[nc],
                         actors=[nc],
-                        genres=[ba])
+                        genres=[ba],
+                        subscribers=[models.User.query.get('admin')])
 
     db.session.add(l1)
     db.session.add(l2)
