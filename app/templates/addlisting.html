@@ -1,49 +1,49 @@
 {% extends "base.html" %}
 {% block content %}
-    <form action="/addlisting/submit" method="post" name="postmovie">
-    {{ form.hidden_tag() }}
-    <table style="width:match_content">
-      <tr align="left">
-        <th>Update ID (optional):</th>
-        <th>{{ form.update_id() }}</th>
-      </tr>
+<h2>Add or Update Listing</h2>
+<form action="/addlisting/submit" method="post" name="postmovie">
+  {{ form.hidden_tag() }}
+  <table style="width:match_content">
+    <tr align="left">
+      <th>Update ID (optional):</th>
+      <th>{{ form.update_id() }}</th>
+    </tr>
 
-      <tr align="left" >
-        <th>Title:</th>
-        <th>{{ form.title(size=60) }}</th>
-      </tr>
+    <tr align="left" >
+      <th>Title:</th>
+      <th>{{ form.title(size=60) }}</th>
+    </tr>
 
-      <tr align="left" >
-        <th>Genres:</th>
-        <th>{{ form.genres() }}</th>
-      </tr>
+    <tr align="left" >
+      <th>Genres:</th>
+      <th>{{ form.genres() }}</th>
+    </tr>
 
-      <tr align="left" >
-        <th>Description:</th>
-        <th>{{ form.description() }}</th>
-      </tr>
+    <tr align="left" >
+      <th>Description:</th>
+      <th>{{ form.description() }}</th>
+    </tr>
 
-      <tr align="left" >
-        <th>Release Date:     </th>
-        <th>{{ form.release_date() }}</th>
-      </tr>
+    <tr align="left" >
+      <th>Release Date:     </th>
+      <th>{{ form.release_date() }}</th>
+    </tr>
 
-      <tr align="left" >
-        <th>Writers:</th>
-        <th>{{ form.writers() }}</th>
-      </tr>
+    <tr align="left" >
+      <th>Writers:</th>
+      <th>{{ form.writers() }}</th>
+    </tr>
 
-      <tr align="left" >
-        <th>Directors:</th>
-        <th>{{ form.directors() }}</th>
-      </tr>
+    <tr align="left" >
+      <th>Directors:</th>
+      <th>{{ form.directors() }}</th>
+    </tr>
 
-      <tr align="left" >
-        <th>Actors:</th>
-        <th>{{ form.actors() }}</th>
-      </tr>
-
-    </table>
-    <input type="submit" value="Post">
-
+    <tr align="left" >
+      <th>Actors:</th>
+      <th>{{ form.actors() }}</th>
+    </tr>
+  </table>
+  <input type="submit" value="Post">
+</form>
 {% endblock %}
