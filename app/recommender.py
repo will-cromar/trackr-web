@@ -50,7 +50,7 @@ def get_neighbors(listings, target_idx=-1):
 
     res = []
     for listing, cid in zip(listings, clusters):
-        if cid == target_cluster:
+        if cid == target_cluster and listing != listings[target_idx]:
             res.append(listing)
 
     return res

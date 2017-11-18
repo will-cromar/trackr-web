@@ -51,6 +51,8 @@ def __fetch_recommendation(user):
 
     # Pick a random neighbor
     neighbors = get_neighbors(listings, target_index)
+    if not neighbors:
+        return []
     recommendation = random.choice(neighbors)
 
     return [{
@@ -85,5 +87,20 @@ def __fetch_schedule_data(user):
             data['time'] = int(time.mktime(air_date.timetuple()))
             data['message'] = message
             user_schedule_data.append(data)
+
+    upcoming_releases = models.Listing.query \
+        .filter(
+            models.Listing.subscribers.contains(user),
+            models.Listing.release_date >= date.today(),
+            models.Listing.release_date <= date.today() + timedelta(days=7)) \
+        .all()
+    for listing in upcoming_releases:
+        data = {
+            'listing_id': listing.listing_id,
+            'time': int(listing.release_date.timestamp()),
+            'message': "{} is scheduled to air {} days from now!".format(
+                listing.title, (listing.release_date.date() - date.today()).days)
+        }
+        user_schedule_data.append(data)
 
     return user_schedule_data
