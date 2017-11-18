@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, TextAreaField
+from wtforms import StringField, IntegerField, TextAreaField, PasswordField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired, InputRequired, NumberRange, Optional
 
@@ -27,7 +27,7 @@ class EpisodeForm(FlaskForm):
 
 class LoginForm(FlaskForm):
     username = StringField('username', validators=[DataRequired()])
-    password = StringField('password', validators=[DataRequired()])
+    password = PasswordField('password', validators=[DataRequired()])
 
 
 SignupForm = LoginForm

@@ -1,10 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-    <form action="/checkcredentials" method="post" name="login">
+<h2>Log In</h2>
+<form action="/checkcredentials" method="post" name="login">
     {{ form.hidden_tag() }}
-    <p>
-        Username: {{ form.username() }}<br>
-        Password: {{ form.password() }}<br>
-        <input type="submit" value="Log in"><br>
-    </p>
+    <table style="width:match_content">
+        <tr>
+            <th>Username:</th>
+            <th>{{ form.username() }}</th>
+        </tr>
+        <tr>
+            <th>Password:</th>
+            <th>{{ form.password() }}</th>
+        </tr>
+    </table>
+    <input type="submit" value="Log in"><br>
+</form>
 {% endblock %}

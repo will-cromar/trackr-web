@@ -1,10 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-    <form action="/createuser" method="post" name="signup">
+<form action="/createuser" method="post" name="signup">
     {{ form.hidden_tag() }}
-    <p>
-        Username: {{ form.username() }}<br>
-        Password: {{ form.password() }}<br>
-        <input type="submit" value="Create account"><br>
-    </p>
+    <h2>Sign up</h2>
+    <table style="width:match_content">
+        <tr>
+            <th>Username:</th>
+            <th>{{ form.username() }}</th>
+        </tr>
+        <tr>
+            <th>Password:</th>
+            <th>{{ form.password() }}</th>
+        </tr>
+    </table>
+    <input type="submit" value="Sign up"><br>
+</form>
 {% endblock %}
