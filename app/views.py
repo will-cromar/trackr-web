@@ -6,6 +6,7 @@ from .forms import MovieForm, EpisodeForm, LoginForm, SignupForm
 from .notifications import notify_neighbors
 import datetime
 
+
 @login_manager.user_loader
 def load_user(user_id):
     u = models.User.query.get(user_id)

@@ -61,7 +61,14 @@
             color: #333;
         }
         .main h2 {
-            margin-top: 0px;
+            margin-top: 8px;
+        }
+        .messages {
+            padding: 8px;
+            border: 1px solid black;
+        }
+        .messages h3 {
+            margin-top: 0px
         }
     </style>
 </head>
@@ -107,11 +114,14 @@
     <div class="main content">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-                </ul>
+                <div class="messages">
+                    <h3>Messages:</h3>
+                    <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
             {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}
