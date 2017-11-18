@@ -123,7 +123,7 @@ def cachedump():
 
 @app.route('/api/refreshcache')
 def refreshcache():
-    cache.flushall()
+    # cache.flushall()
     batch_notifications()
 
     return "done"

@@ -54,6 +54,9 @@ class Listing(db.Model):
     genres = db.relationship('Genre',
                              back_populates='members',
                              secondary=listing_genres)
+    subscribers = db.relationship('User',
+                                  back_populates='subscriptions',
+                                  secondary=user_subscriptions)
 
     def todict(self):
         res = {
@@ -163,6 +166,7 @@ class User(db.Model, flask_login.UserMixin):
     password = db.Column('password', db.String(128), nullable=False)
     is_admin = db.Column('is_admin', db.Boolean, default=False)
     subscriptions = db.relationship('Listing',
+                                    back_populates='subscribers',
                                     secondary=user_subscriptions)
 
     @property

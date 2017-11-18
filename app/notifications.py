@@ -18,6 +18,25 @@ def batch_notifications():
             cache.lpush(user.username, json.dumps(n))
 
 
+def notify_neighbors(listings, new_listing):
+    target_index = listings.index(new_listing)
+
+    neighbors = get_neighbors(listings, target_index)
+    notify_users = set()
+    for n in neighbors:
+        for s in n.subscribers:
+            notify_users.add(s.username)
+
+    for user in notify_users:
+        notification = {
+            'listing_id': new_listing.listing_id,
+            'time': int(new_listing.release_date.timestamp()),
+            'message': "New Content: {}".format(new_listing.title),
+            'submessage': "Similar to content that you've subscribed to"
+        }
+        cache.lpush(user, json.dumps(notification))
+
+
 def __fetch_recommendation(user):
     """Returns a list containing 0 or 1 recommendations for a user."""
     subs = user.subscriptions

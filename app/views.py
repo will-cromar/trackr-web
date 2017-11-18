@@ -3,6 +3,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from app import app, db, models, login_manager
 from .utils import passwordHash
 from .forms import MovieForm, EpisodeForm, LoginForm, SignupForm
+from .notifications import notify_neighbors
 import datetime
 
 @login_manager.user_loader
@@ -63,6 +64,7 @@ def postmovie():
         db.session.add(m)
         db.session.commit()
         flash("Submitted entry as ID {}".format(m.listing_id))
+        notify_neighbors(models.Listing.query.all(), models.Listing.query.get(m.listing_id))
     else:
         for fieldName, errorMessage in form.errors.items():
             flash("ERROR: {} {}".format(fieldName, errorMessage))
