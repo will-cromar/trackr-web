@@ -131,6 +131,9 @@ def createuser():
     """Submit signup form"""
     form = SignupForm()
     if form.validate_on_submit():
+        if models.User.query.get(form.username.data):
+            flash("Username is taken.")
+            return redirect('/signup')
         u = models.User(username=form.username.data,
                         password=passwordHash(form.password.data))
         db.session.add(u)
@@ -141,7 +144,7 @@ def createuser():
         for fieldName, errorMessage in form.errors.items():
             flash("ERROR: {} {}".format(fieldName, errorMessage))
 
-    return redirect('/')
+    return redirect('/signup')
 
 
 @app.route('/login')
