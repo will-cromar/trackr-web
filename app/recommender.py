@@ -2,12 +2,13 @@ from app import db, models
 import numpy as np
 from sklearn.cluster import AffinityPropagation
 
-"""
-    Note: Currently requires a call from within the web server.
-    Temporarily add a call to this function through one of the
-    routes in views.py to test the output.
-"""
+
 def get_recommendations():
+    """
+        Note: Currently requires a call from within the web server.
+        Temporarily add a call to this function through one of the
+        routes in views.py to test the output.
+    """
     listings = db.session.query(models.Listing).all()
 
     recommendations = []
@@ -28,7 +29,9 @@ def get_recommendations():
 
     return recommendations
 
+
 def get_closest_recommendation(listing_1):
+    """Get the closest neighbor of this listing."""
     listings = db.session.query(models.Listing).all()
 
     top_score = 0
@@ -79,13 +82,13 @@ def get_similarity_matrix(listings):
     return m
 
 
-"""
-    Similarity Score is determined by counting the number of
-    similar attributes. Generally, higher scores will are preferred.
-
-    listing_1 and listing_2 should be of types models.Listing
-"""
 def __calc_similarity_score(listing_1, listing_2):
+    """
+        Similarity Score is determined by counting the number of
+        similar attributes. Generally, higher scores will are preferred.
+
+        listing_1 and listing_2 should be of types models.Listing
+    """
 
     assert type(listing_1) is models.Listing
     assert type(listing_2) is models.Listing

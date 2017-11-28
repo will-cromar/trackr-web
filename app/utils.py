@@ -1,14 +1,17 @@
+"""Functions that don't fit in other files."""
 from hashlib import sha256
 import string
 import random
 
 
 def passwordHash(password):
+    """Compute the SHA256 hash of password."""
     passwordBytes = password.encode('utf-8')
     return sha256(passwordBytes).hexdigest()
 
 
 def random_string(length):
+    """Create a random string of length."""
     return ''.join(random.choices(string.ascii_letters, k=length))
 
 

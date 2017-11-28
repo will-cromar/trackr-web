@@ -1,7 +1,9 @@
+"""Contains forms used by web application."""
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, TextAreaField, PasswordField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import DataRequired, InputRequired, NumberRange, Optional
+from wtforms.validators import DataRequired, InputRequired, NumberRange, \
+                               Optional
 
 
 class MovieForm(FlaskForm):

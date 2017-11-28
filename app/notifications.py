@@ -1,3 +1,4 @@
+"""Contains code to generate notifications for users."""
 from datetime import date, timedelta
 from app import db, models, cache
 from .recommender import get_neighbors
@@ -19,6 +20,7 @@ def batch_notifications():
 
 
 def notify_neighbors(listings, new_listing):
+    """Notify the subscribers of neighboring listings of new content."""
     target_index = listings.index(new_listing)
 
     neighbors = get_neighbors(listings, target_index)

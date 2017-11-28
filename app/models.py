@@ -1,5 +1,5 @@
+"""Contains database models used by web application."""
 from datetime import datetime
-
 from app import db
 import flask_login
 

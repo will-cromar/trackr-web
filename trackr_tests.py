@@ -86,9 +86,9 @@ class TrackrTestCases(unittest.TestCase):
         self.db.session.commit()
 
         listings = models.Listing.query.all()
-        results = {'results': list(map(models.Listing.todict, listings))}
+        results = {'results': listings[1].todict()}
 
-        resp = self.app.get('/api/query?query=asdf')
+        resp = self.app.get('/api/query?query=Oviedo: The City of Chickens')
         assert json.loads(resp.data) == results
 
     def test_api_create_user(self):

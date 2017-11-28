@@ -1,5 +1,6 @@
+"""Contains functionality for public REST API of web application."""
 from app import app, models, cache, db
-from .utils import passwordHash, generate_random_listings, model_dict
+from .utils import passwordHash
 from .notifications import batch_notifications
 from flask import request
 from flask.json import jsonify
@@ -20,6 +21,7 @@ def identity(payload):
     return models.User.query.filter_by(username=payload["identity"]).first()
 
 
+# Initializes global state for session manager
 jwt = JWT(app, authenticate, identity)
 
 
@@ -53,6 +55,8 @@ def createaccount():
 
 @app.route('/api/query')
 def query():
+    """Searches for the string in all fields of all listings and 
+    returns matches."""
     q = request.args.get('query')
     if q is None:
         listings = models.Listing.query.all()
@@ -77,6 +81,7 @@ def query():
 
 @app.route('/api/getlisting')
 def getlisting():
+    """Get a listing by ID."""
     q = request.args.get('listing_id')
 
     if not q:
@@ -88,6 +93,7 @@ def getlisting():
 @app.route('/api/addsubscription', methods=['POST'])
 @jwt_required()
 def addsubscription():
+    """Subscribe the current user to the given listing."""
     listing_id = request.get_json()['listing_id']
     username = current_identity.username
 
@@ -104,6 +110,7 @@ def addsubscription():
 @app.route('/api/subscriptions')
 @jwt_required()
 def subscriptions():
+    """Gets all of the user's current subscriptions."""
     subs = current_identity.subscriptions
     res = list(map(models.Listing.todict, subs))
     return jsonify({'subscriptions': res})
@@ -111,19 +118,22 @@ def subscriptions():
 
 @app.route('/api/genrelist')
 def genreslist():
+    """List all of the genres in the database."""
     res = list(map(models.Genre.todict, models.Genre.query.all()))
     return jsonify({'genres': res})
 
 
 @app.route('/api/cachedump')
 def cachedump():
+    """Print all items in the cache."""
     return jsonify({key: list(map(json.loads, cache.lrange(key, 0, -1)))
                     for key in cache.keys()})
 
 
 @app.route('/api/refreshcache')
 def refreshcache():
-    # cache.flushall()
+    """Update the cache."""
+    cache.flushall()
     batch_notifications()
 
     return "done"
@@ -134,6 +144,7 @@ def refreshcache():
 
 @app.route('/util/niccage')
 def niccage():
+    """Adds sample Nicolas Cage movies and subscribes admin."""
     nc = models.Person(name='Nicolas Cage')
     ba = models.Genre(genre_id=1337, genre='Bad action')
 
@@ -163,6 +174,7 @@ def niccage():
 
 @app.route('/util/equifax')
 def equifax():
+    """Creates super secure admin account."""
     u = models.User(username='admin',
                     password=passwordHash('admin'),
                     is_admin=True)
