@@ -38,7 +38,8 @@ def notifications():
     """Fetches notifications in cache for uesr based on JWT token"""
 
     key = current_identity.username
-    return jsonify({'notifications': list(map(json.loads, cache.lrange(key, 0, -1)))})
+    return jsonify({'notifications': list(map(json.loads, cache.lrange(key, 0,
+                                                                       -1)))})
 
 
 @app.route('/api/createaccount', methods=['POST'])
@@ -55,7 +56,7 @@ def createaccount():
 
 @app.route('/api/query')
 def query():
-    """Searches for the string in all fields of all listings and 
+    """Searches for the string in all fields of all listings and
     returns matches."""
     q = request.args.get('query')
     if q is None:

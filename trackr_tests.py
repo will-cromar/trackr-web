@@ -28,8 +28,10 @@ class TrackrTestCases(unittest.TestCase):
         ]
 
         self.test_listings = [
-            models.Listing(title='Biology: Chemistry in Disguise', release_date=datetime.utcnow()),
-            models.Listing(title='Oviedo: The City of Chickens', release_date=datetime.utcnow())
+            models.Listing(title='Biology: Chemistry in Disguise',
+                           release_date=datetime.utcnow()),
+            models.Listing(title='Oviedo: The City of Chickens',
+                           release_date=datetime.utcnow())
         ]
 
         self.test_users = [

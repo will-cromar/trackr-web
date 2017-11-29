@@ -66,11 +66,15 @@ def __fetch_recommendation(user):
 
 
 def __fetch_schedule_data(user):
-    """Gathers a list of Schedule data per user and returns a dictionary of that data"""
-    upcoming_schedule = db.session.query(models.Schedule.date, models.Schedule.listing_id, models.Listing.title).\
-                        filter(models.Schedule.listing_id.in_([i.listing_id for i in user.subscriptions])).\
-                        filter(models.Schedule.listing_id == models.Listing.listing_id).\
-                        order_by(models.Schedule.date.asc()).all()
+    """Gathers a list of Schedule data per user and returns a dictionary
+    of that data"""
+    upcoming_schedule = db.session.query(
+        models.Schedule.date, models.Schedule.listing_id,
+        models.Listing.title) \
+        .filter(models.Schedule.listing_id.in_([i.listing_id for i
+                                                in user.subscriptions])) \
+        .filter(models.Schedule.listing_id == models.Listing.listing_id) \
+        .order_by(models.Schedule.date.asc()).all()
 
     user_schedule_data = []
 
@@ -79,10 +83,14 @@ def __fetch_schedule_data(user):
         listing_id = schedule_item[1]
         listing_title = schedule_item[2]
 
-        if date.today() <= air_date.date() and air_date.date() <= (date.today() + timedelta(days=365)):
-            message = "{} is scheduled to air {}!".format(listing_title, \
-                "today" if air_date.date() == date.today() else "in {} days".\
-                format((air_date.date() - date.today()).days))
+        if date.today() <= air_date.date() and air_date.date() <= (
+                date.today() + timedelta(days=7)):
+            message = "{} is scheduled to air {}!" \
+                .format(
+                    listing_title,
+                    "today" if air_date.date() == date.today()
+                    else "in {} days"
+                    .format((air_date.date() - date.today()).days))
 
             data = {}
             data['listing_id'] = listing_id
@@ -101,7 +109,8 @@ def __fetch_schedule_data(user):
             'listing_id': listing.listing_id,
             'time': int(listing.release_date.timestamp()),
             'message': "{} is scheduled to air {} days from now!".format(
-                listing.title, (listing.release_date.date() - date.today()).days)
+                listing.title, (listing.release_date.date() -
+                                date.today()).days)
         }
         user_schedule_data.append(data)
 

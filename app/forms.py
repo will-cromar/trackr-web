@@ -23,8 +23,10 @@ class EpisodeForm(FlaskForm):
     season = IntegerField('season', validators=[DataRequired()])
     episode = IntegerField('episode', validators=[DataRequired()])
     date = DateField('date', validators=[DataRequired()])
-    hour = IntegerField('hour', validators=[InputRequired(), NumberRange(0, 23)])
-    minute = IntegerField('minute', validators=[InputRequired(), NumberRange(0, 59)])
+    hour = IntegerField('hour', validators=[InputRequired(),
+                        NumberRange(0, 23)])
+    minute = IntegerField('minute', validators=[InputRequired(),
+                          NumberRange(0, 59)])
 
 
 class LoginForm(FlaskForm):

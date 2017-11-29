@@ -70,7 +70,8 @@ class Listing(db.Model):
             'genres': list(map(Genre.todict, self.genres)),
         }
 
-        schedules = Schedule.query.filter(Schedule.listing_id == self.listing_id).all()
+        schedules = Schedule.query.filter(Schedule.listing_id ==
+                                          self.listing_id).all()
         if len(schedules) > 0:
             res['schedules'] = list(map(Schedule.todict, schedules))
 
@@ -107,7 +108,8 @@ class Person(db.Model):
         }
 
     def make_or_get(name):
-        """If an entry exists with name, return it. Otherwise, make a new one."""
+        """If an entry exists with name, return it.
+        Otherwise, make a new one."""
         q = Person.query.filter(Person.name == name).all()
         return q[0] if len(q) > 0 else Person(name=name)
 
@@ -130,7 +132,8 @@ class Genre(db.Model):
         }
 
     def make_or_get(name):
-        """If an entry exists with name, return it. Otherwise, make a new one."""
+        """If an entry exists with name, return it.
+        Otherwise, make a new one."""
         q = Genre.query.filter(Genre.genre == name).all()
         return q[0] if len(q) > 0 else Genre(genre=name)
 
